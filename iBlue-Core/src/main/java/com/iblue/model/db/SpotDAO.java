@@ -28,7 +28,6 @@ public class SpotDAO implements SpotDAOInterface {
 		session.close();
 	}
 
-	@Override
 	public Spot persist(SpotInterface spotI) {
 		Spot spot;
 
@@ -57,7 +56,6 @@ public class SpotDAO implements SpotDAOInterface {
 		spot.setStreetId(alloc.getNearestStreetId(spot));
 	}
 
-	@Override
 	public Spot update(SpotInterface spotI) {
 		if (spotI == null) {
 			return null;
@@ -92,7 +90,6 @@ public class SpotDAO implements SpotDAOInterface {
 		return spot;
 	}
 
-	@Override
 	public void delete(SpotInterface spotI) {
 		if (spotI == null) {
 			return;
@@ -116,7 +113,6 @@ public class SpotDAO implements SpotDAOInterface {
 		closeTx();
 	}
 
-	@Override
 	public Spot getSpot(int id) {
 		open();
 		Query<Spot> query = session.createQuery("from Spot where id = :id", Spot.class);
@@ -129,7 +125,6 @@ public class SpotDAO implements SpotDAOInterface {
 		return spots.get(0);
 	}
 
-	@Override
 	public List<Spot> findAll() {
 		open();
 		Query<Spot> query = session.createQuery("from Spot", Spot.class);
@@ -138,7 +133,6 @@ public class SpotDAO implements SpotDAOInterface {
 		return spots;
 	}
 
-	@Override
 	public List<Spot> findAllActive() {
 		open();
 		Query<Spot> query = session.createQuery("from Spot where status = :status", Spot.class);
@@ -148,11 +142,9 @@ public class SpotDAO implements SpotDAOInterface {
 		return spots;
 	}
 
-	@Override
 	public List<Spot> findAllActive(long fromTime) {
 		open();
-		Query<Spot> query = session.createQuery("from Spot where status = :status and updateTs >= :ts",
-				Spot.class);
+		Query<Spot> query = session.createQuery("from Spot where status = :status and updateTs >= :ts", Spot.class);
 		query.setParameter("status", 1);
 		query.setParameter("ts", new Date(fromTime));
 		List<Spot> spots = query.getResultList();
@@ -160,11 +152,9 @@ public class SpotDAO implements SpotDAOInterface {
 		return spots;
 	}
 
-	@Override
 	public List<Spot> findAllRelease(long fromTime) {
 		open();
-		Query<Spot> query = session.createQuery("from Spot where status < :status and updateTs >= :ts",
-				Spot.class);
+		Query<Spot> query = session.createQuery("from Spot where status < :status and updateTs >= :ts", Spot.class);
 		query.setParameter("status", 1);
 		query.setParameter("ts", new Timestamp(fromTime));
 		List<Spot> spots = query.getResultList();

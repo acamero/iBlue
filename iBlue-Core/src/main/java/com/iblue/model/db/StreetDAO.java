@@ -22,8 +22,7 @@ public class StreetDAO implements StreetDAOInterface {
 		session.close();
 	}
 
-	@Override
-	public Street persist(StreetInterface streetI) {
+		public Street persist(StreetInterface streetI) {
 		Street street;
 
 		try {
@@ -43,7 +42,7 @@ public class StreetDAO implements StreetDAOInterface {
 		return street;
 	}
 
-	@Override
+	
 	public Street update(StreetInterface streetI) {
 		if(streetI==null) {
 			return null;
@@ -70,7 +69,7 @@ public class StreetDAO implements StreetDAOInterface {
 		return street;
 	}
 
-	@Override
+	
 	public void delete(StreetInterface streetI) {
 		Street street;
 
@@ -85,7 +84,7 @@ public class StreetDAO implements StreetDAOInterface {
 		closeTx();
 	}
 
-	@Override
+	
 	public StreetInterface getStreet(int id) {
 		open();
 		Query<Street> query = session.createQuery("from Street where id = :id", Street.class);
@@ -98,7 +97,7 @@ public class StreetDAO implements StreetDAOInterface {
 		return streets.get(0);
 	}
 
-	@Override
+	
 	public List<Street> findAll() {
 		open();
 		Query<Street> query = session.createQuery("from Street", Street.class);
@@ -107,7 +106,7 @@ public class StreetDAO implements StreetDAOInterface {
 		return streets;
 	}
 
-	@Override
+	
 	public List<Street> findAllActive() {
 		open();
 		Query<Street> query = session.createQuery("from Street where status = :status", Street.class);

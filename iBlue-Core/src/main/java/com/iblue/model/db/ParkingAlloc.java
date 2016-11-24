@@ -22,7 +22,14 @@ public class ParkingAlloc implements ParkingAllocInterface {
 		session.close();
 	}
 
-	public int getNearestStreetId(Spot spot) {
+	public int getNearestStreetId(SpotInterface spotI) {
+		Spot spot;
+		try {
+			spot = (Spot) spotI;
+		} catch (Exception e) {
+			SpotDAO dao = new SpotDAO();
+			spot = dao.getSpot(spotI.getId());
+		}
 		open();
 		@SuppressWarnings("rawtypes")
 		Query query = session.createNativeQuery("CALL iblue.nearest_street(:latitude, :longitude, :northing, :easting)")
@@ -37,7 +44,7 @@ public class ParkingAlloc implements ParkingAllocInterface {
 		closeTx();
 		if (res != null && res.length >= 2) {
 			System.out.println("Street id=" + res[0].toString() + " distance=" + res[1].toString());
-			return (int) res[0];
+			return (Integer) res[0];
 		}
 		// if no street found
 		return 0;
@@ -53,6 +60,5 @@ public class ParkingAlloc implements ParkingAllocInterface {
 		closeTx();
 		return area;
 	}
-
 
 }
