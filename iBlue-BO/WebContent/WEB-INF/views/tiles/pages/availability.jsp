@@ -1,4 +1,4 @@
-<script src="resources/js/map.js"></script>
+<script src="resources/js/availability.js"></script>
 
 <div id="map"></div>
 

@@ -9,15 +9,9 @@ function addMarker(id, lat1, lng1, lat2, lng2, used, cap) {
 	map = document.getElementById('map').gMap
 
 	var color = "black";
-	if(cap>0) {			
-
-		if(cap <= 2) {
-			color = "red";
-		} else if(cap <= 5) {
-			color = "yellow"
-		} else {
-			color = "green";
-		}
+	if(cap>0) {
+		var usage = used/cap;
+		color = getGreenToRedUsage(usage);		
 	}
 	
 	

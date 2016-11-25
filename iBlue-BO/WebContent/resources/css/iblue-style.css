@@ -111,3 +111,19 @@ body {
 .google {
 	background-color: #dd4b39;
 }
+
+#login {	
+	margin-left: auto;
+	margin-right: auto;
+	align: center;
+	color: white;
+	background-color: #666666;
+	width: 250px;
+	padding:30px;
+	text-align:right;
+}
+
+#login .error {
+	color:red;
+	font-weight:bold;
+}

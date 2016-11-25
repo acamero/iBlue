@@ -4,32 +4,66 @@
        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 <tiles-definitions>
 
-	<definition name="base-definition"
+	<definition name="base-pub-definition"
 		template="/WEB-INF/views/tiles/layouts/defaultLayout.jsp">
 		<put-attribute name="title" value="" />
 		<put-attribute name="header" type="template"
-			value="/WEB-INF/views/tiles/templates/header.jsp" />
+			value="/WEB-INF/views/tiles/templates/headerPub.jsp" />
 		<put-attribute name="body" type="template" value="" />
 		<put-attribute name="footer" type="template"
-			value="/WEB-INF/views/tiles/templates/footer.jsp" />
+			value="/WEB-INF/views/tiles/templates/footerPub.jsp" />
 	</definition>
 
-	<definition name="map" extends="base-definition">
-		<put-attribute name="title" value="iBlue" />
-		<put-attribute name="body" type="template"
-			value="/WEB-INF/views/tiles/pages/map.jsp" />
+	<definition name="base-priv-definition"
+		template="/WEB-INF/views/tiles/layouts/privateLayout.jsp">
+		<put-attribute name="title" value="" />
+		<put-attribute name="header" type="template"
+			value="/WEB-INF/views/tiles/templates/headerPriv.jsp" />
+		<put-attribute name="body" type="template" value="" />
+		<put-attribute name="footer" type="template"
+			value="/WEB-INF/views/tiles/templates/footerPriv.jsp" />
 	</definition>
 
-	<definition name="spots" extends="base-definition">
-		<put-attribute name="title" value="iBlue" />
+	<definition name="availability" extends="base-pub-definition">
+		<put-attribute name="title" value="Disponibilidad" />
 		<put-attribute name="body" type="template"
-			value="/WEB-INF/views/tiles/pages/spots.jsp" />
+			value="/WEB-INF/views/tiles/pages/availability.jsp" />
 	</definition>
-	
-	<definition name="us" extends="base-definition">
-		<put-attribute name="title" value="iBlue" />
+
+	<definition name="spots" extends="base-priv-definition">
+		<put-attribute name="title" value="Aparcamiento" />
+		<put-attribute name="body" type="template"
+			value="/WEB-INF/views/tiles/pages/private/spots.jsp" />
+	</definition>
+
+	<definition name="us" extends="base-pub-definition">
+		<put-attribute name="title" value="Nosotros" />
 		<put-attribute name="body" type="template"
 			value="/WEB-INF/views/tiles/pages/us.jsp" />
 	</definition>
+
+	<definition name="home" extends="base-priv-definition">
+		<put-attribute name="title" value="Bienvenido a iBlue" />
+		<put-attribute name="body" type="template"
+			value="/WEB-INF/views/tiles/pages/private/home.jsp" />
+	</definition>
+
+	<definition name="map" extends="base-priv-definition">
+		<put-attribute name="title" value="Mapa iBlue" />
+		<put-attribute name="body" type="template"
+			value="/WEB-INF/views/tiles/pages/private/map.jsp" />
+	</definition>
 	
+	<definition name="availability-priv" extends="base-priv-definition">
+		<put-attribute name="title" value="Mapa iBlue" />
+		<put-attribute name="body" type="template"
+			value="/WEB-INF/views/tiles/pages/availability.jsp" />
+	</definition>
+
+	<definition name="login" extends="base-pub-definition">
+		<put-attribute name="title" value="Login iBlue" />
+		<put-attribute name="body" type="template"
+			value="/WEB-INF/views/tiles/pages/login.jsp" />
+	</definition>
+
 </tiles-definitions>
