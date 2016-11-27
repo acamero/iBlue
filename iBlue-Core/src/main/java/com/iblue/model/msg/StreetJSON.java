@@ -1,8 +1,9 @@
-package com.iblue.service.data;
+package com.iblue.model.msg;
 
 import com.iblue.model.StreetInterface;
+import com.iblue.auth.AuthMsgInterface;
 
-public class StreetJSON implements StreetInterface {
+public class StreetJSON implements StreetInterface, AuthMsgInterface {
 
 	private float latitude1;
 	private float longitude1;
@@ -11,6 +12,8 @@ public class StreetJSON implements StreetInterface {
 	private int status;
 	private int capacity;
 	private int id;
+	private String token;
+	private String userId;
 	
 	public StreetJSON(){}
 	
@@ -100,5 +103,20 @@ public class StreetJSON implements StreetInterface {
 				"\"id\":\""+id+"\""+
 				"}";
 	}
+	
+	public String getToken() {
+		return token;
+	}
+	
+	public void setToken(String token) {
+		this.token = token;
+	}
 
+	public String getUserId() {
+		return userId;
+	}
+	
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 }

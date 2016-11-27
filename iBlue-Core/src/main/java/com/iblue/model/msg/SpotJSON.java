@@ -1,14 +1,16 @@
-package com.iblue.queue.mq.reader;
+package com.iblue.model.msg;
 
 import com.iblue.model.SpotInterface;
+import com.iblue.auth.AuthMsgInterface;
 
-public class SpotJSON implements SpotInterface {
+public class SpotJSON implements SpotInterface, AuthMsgInterface {
 
 	private float latitude;
 	private float longitude;
 	private String mac;
 	private int id;
 	private int status;
+	private String token;
 	
 	public SpotJSON() {
 		
@@ -75,5 +77,18 @@ public class SpotJSON implements SpotInterface {
 		return "{\"latitude\":\"" + this.latitude + "\",\"longitude\":\"" + this.longitude + "\",\"mac\":\"" + this.mac
 				+ "\",\"status\":\"" + this.status + "\",\"id\":\"" + this.id + "\"}";
 
+	}
+
+	@Override
+	public String getToken() {
+		return token;
+	}
+	
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
+	public String getUserId() {
+		return mac;
 	}
 }
