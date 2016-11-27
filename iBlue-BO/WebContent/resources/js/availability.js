@@ -83,8 +83,3 @@ function initMarkers() {
 	})
 }
 
-function loadMarkers() {
-	global.lastUpdate = Date.now();
-}
-
-setInterval(loadMarkers, 120000);

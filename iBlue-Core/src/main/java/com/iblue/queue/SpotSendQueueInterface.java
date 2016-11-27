@@ -2,10 +2,10 @@ package com.iblue.queue;
 
 import com.iblue.model.SpotInterface;
 
-public interface SpotQueueInterface {
+public interface SpotSendQueueInterface {
 
 	public boolean send(SpotInterface spot);
 	
-	public SpotInterface receive();
+	
 	
 }

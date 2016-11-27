@@ -5,8 +5,18 @@ import com.iblue.queue.mq.reader.SpotReaderMQ;
 public class ReaderMain {
 
 	public static void main(String[] args) {
-		SpotReaderMQ reader = new SpotReaderMQ();
+		boolean test = false;
 		
+		if(test) {
+			test();
+		} else {
+			deploy();
+		}
+	}
+
+	private static void test() {
+		SpotReaderMQ reader = new SpotReaderMQ();
+
 		reader.startReceiving();
 		System.out.println("Start");
 		try {
@@ -17,5 +27,19 @@ public class ReaderMain {
 		}
 		reader.stopReceiving();
 		System.out.println("Stop");
+		
 	}
+	 
+	private static void deploy() {
+		SpotReaderMQ reader = new SpotReaderMQ();
+
+		System.out.println("Start reading queue");
+		reader.startReceiving();
+		
+		while(true) {
+			// continue receiving
+		}
+	}
+	
+
 }

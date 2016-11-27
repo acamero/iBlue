@@ -16,7 +16,7 @@ import com.iblue.model.SpotInterface;
 
 
 @Entity
-@Table(name = "spots", schema = "iblue")
+@Table(name = "spots", schema = DbSchema.DB_SCHEMA)
 public class Spot implements SpotInterface {
 
 	@Id
@@ -44,7 +44,7 @@ public class Spot implements SpotInterface {
 	@Column(name = "fk_street_id")
 	private int streetId;
 
-	@Column(name = "str_mac")
+	@Column(name = "str_mac", length=45)
 	private String mac;
 
 	@Column(name = "int_status", columnDefinition = "TINYINT")

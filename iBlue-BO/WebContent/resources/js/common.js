@@ -3,10 +3,7 @@ var SERVICE_CONTEXT = "/iBlue-Service";
 
 window.onload = function() {
 	loc = window.location.pathname;
-	loc = loc.replace(BO_CONTEXT + "/", "");
-	if (loc.length == 0) {
-		loc = "map";
-	}
+	loc = loc.replace(BO_CONTEXT + "/bo/", "");	
 	sel = document.getElementById(loc + "-header-bullet");
 	sel.classList.add("selected");
 };

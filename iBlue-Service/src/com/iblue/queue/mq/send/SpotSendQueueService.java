@@ -26,7 +26,7 @@ public class SpotSendQueueService implements SpotSendQueueInterface {
 	public boolean send(SpotInterface spot) {
 		try {
 			Channel channel = QueueConnection.getQueueConnection().getConnection().createChannel();
-			channel.queueDeclare(QueueConfiguration.SPOTS_QUEUE_NAME, false, true, false, null);
+			channel.queueDeclare(QueueConfiguration.SPOTS_QUEUE_NAME, false, false, false, null);
 			channel.basicPublish("", QueueConfiguration.SPOTS_QUEUE_NAME, null, spot.toString().getBytes());
 			// System.out.println(" [x] Sent '" + message + "'");
 			channel.close();

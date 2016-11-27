@@ -7,15 +7,13 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class QueueConnection {
-
 	
-	private static final String HOST = "localhost";
 	private static final QueueConnection INSTANCE = new QueueConnection();
 	private Connection connection;
 
 	private QueueConnection() {
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost(HOST);
+		factory.setHost(QueueConfiguration.SPOTS_HOST);
 
 		try {
 			connection = factory.newConnection();

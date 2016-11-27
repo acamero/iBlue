@@ -14,8 +14,10 @@ import javax.ws.rs.core.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import com.iblue.auth.AuthServiceInterface;
+import com.iblue.auth.BasicAuthService;
 import com.iblue.model.StreetDAOInterface;
-import com.iblue.service.data.StreetJSON;
+import com.iblue.model.msg.StreetJSON;
 import com.iblue.model.StreetInterface;
 import com.iblue.model.db.StreetDAO;
 
@@ -26,79 +28,76 @@ public class StreetService {
 	@Path("/bulk")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response addBulkStreet(@Valid List<StreetJSON> streets) {
-		System.out.println("Load bulk streets");	
-		
+		System.out.println("Load bulk streets");
+
 		if (streets == null) {
 			return Response.status(200).entity("Null list").build();
 		}
-		
+
 		StreetDAOInterface dao = new StreetDAO();
 		int counter = 0;
 
 		for (StreetInterface street : streets) {
 			street = dao.persist(street);
-			if(street!=null) {
+			if (street != null) {
 				counter++;
 			}
 		}
-		
-		return Response.status(200).entity(streets.size() +" streets received, " + counter + " streets uploaded").build();
+
+		return Response.status(200).entity(streets.size() + " streets received, " + counter + " streets uploaded")
+				.build();
 	}
-	
+
 	@GET
 	@Path("/active")
 	@Produces("application/json")
 	public Response getActiveStreets() throws JSONException {
 		System.out.println("Get all active streets");
-		
+
 		JSONArray jsonArray = new JSONArray();
 		StreetDAOInterface dao = new StreetDAO();
 		List<? extends StreetInterface> streets = dao.findAllActive();
-		
+
 		for (StreetInterface st : streets) {
 			// System.out.println(st.toString());
 			jsonArray.put(st.toString());
 		}
-		
+
 		return Response.status(200).entity(jsonArray.toString()).build();
 	}
-	
+
 	@POST
 	@Path("/set")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response setStreet(StreetJSON street) {
 		System.out.println("Set street");
-		if(street==null) {
+		if (street == null) {
 			return Response.status(200).entity("Null street").build();
 		}
-		
-		String response = "";
-		StreetDAOInterface dao = new StreetDAO();
 
-		if (street.getId() > 0) {
-			StreetInterface tmp = dao.update(street);
-			if(tmp!=null) {
-				response = tmp.toString();
-				System.out.println("Street updated (id=" + tmp.getId() + ")");
-			} else {
-				response = "Could not find the spot id=" + street.getId();
-				System.out.println(response);				
-			}
-//			StreetInterface tmp = dao.getStreet(street.getId());
-//			if (tmp != null) {
-//				tmp.setStatus(street.getStatus());
-//				dao.persist(tmp);
-//				response = tmp.toString();
-//				System.out.println("Street updated (id=" + tmp.getId() + ")");
-//			} else {
-//				System.out.println("Could not find the spot id=" + street.getId());
-//				response = "ERROR";
-//			}
+		AuthServiceInterface auth = new BasicAuthService();
+		String response = "";
+		if (auth.isValidMsg(street)) {
 			
-		} else {			
-			StreetInterface tmp = dao.persist(street);
-			System.out.println("Street created (id=" + street.getId() + ")");
-			response = tmp.toString();
+			StreetDAOInterface dao = new StreetDAO();
+
+			if (street.getId() > 0) {
+				StreetInterface tmp = dao.update(street);
+				if (tmp != null) {
+					response = tmp.toString();
+					System.out.println("Street updated (id=" + tmp.getId() + ")");
+				} else {
+					response = "Could not find the spot id=" + street.getId();
+					System.out.println(response);
+				}
+			} else {
+				StreetInterface tmp = dao.persist(street);
+				System.out.println("Street created (id=" + street.getId() + ")");
+				response = tmp.toString();
+			}
+		} else {
+			System.out.println("Unauthorized message");
+			response = "Unauthorized message";
 		}
 
 		return Response.status(200).entity(response).build();

@@ -31,10 +31,12 @@ public class ParkingAlloc implements ParkingAllocInterface {
 			spot = dao.getSpot(spotI.getId());
 		}
 		open();
+		String queryString = "CALL " + DbSchema.DB_SCHEMA
+				+ ".nearest_street(:latitude, :longitude, :northing, :easting)";
 		@SuppressWarnings("rawtypes")
-		Query query = session.createNativeQuery("CALL iblue.nearest_street(:latitude, :longitude, :northing, :easting)")
-				.setParameter("latitude", spot.getLatitude()).setParameter("longitude", spot.getLongitude())
-				.setParameter("northing", spot.getNorthing()).setParameter("easting", spot.getEasting());
+		Query query = session.createNativeQuery(queryString).setParameter("latitude", spot.getLatitude())
+				.setParameter("longitude", spot.getLongitude()).setParameter("northing", spot.getNorthing())
+				.setParameter("easting", spot.getEasting());
 		Object[] res = null;
 		try {
 			res = (Object[]) query.getSingleResult();
@@ -52,8 +54,9 @@ public class ParkingAlloc implements ParkingAllocInterface {
 
 	public List<StreetAvailability> getNearStreetAvailability(SpotInterface spot) {
 		open();
+		String queryString = "CALL " + DbSchema.DB_SCHEMA + ".area_map(:latitude, :longitude)";
 		@SuppressWarnings("rawtypes")
-		Query query = session.createNativeQuery("CALL iblue.area_map(:latitude, :longitude)", "AreaMapResultSet")
+		Query query = session.createNativeQuery(queryString, "AreaMapResultSet")
 				.setParameter("latitude", spot.getLatitude()).setParameter("longitude", spot.getLongitude());
 		@SuppressWarnings("unchecked")
 		List<StreetAvailability> area = query.getResultList();

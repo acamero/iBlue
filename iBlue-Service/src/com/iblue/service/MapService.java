@@ -12,12 +12,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.iblue.model.ParkingAllocInterface;
-import com.iblue.model.SpotInterface;
 import com.iblue.model.StreetAvailabilityInterface;
 import com.iblue.model.db.ParkingAlloc;
-import com.iblue.service.data.SpotJSON;
+import com.iblue.model.msg.SpotJSON;
 
-
+@Path("/map")
 public class MapService {
 
 	@GET
@@ -29,7 +28,7 @@ public class MapService {
 		
 		JSONArray jsonArray = new JSONArray();
 		ParkingAllocInterface alloc = new ParkingAlloc();
-		SpotInterface spot = new SpotJSON();
+		SpotJSON spot = new SpotJSON();
 		spot.setLatLong(latitude, longitude);		
 		List<? extends StreetAvailabilityInterface> map = alloc.getNearStreetAvailability(spot);
 		for (StreetAvailabilityInterface st : map) {

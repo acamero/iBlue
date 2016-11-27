@@ -4,6 +4,8 @@
        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 <tiles-definitions>
 
+	<!-- Public section -->
+
 	<definition name="base-pub-definition"
 		template="/WEB-INF/views/tiles/layouts/defaultLayout.jsp">
 		<put-attribute name="title" value="" />
@@ -13,6 +15,14 @@
 		<put-attribute name="footer" type="template"
 			value="/WEB-INF/views/tiles/templates/footerPub.jsp" />
 	</definition>
+
+	<definition name="login" extends="base-pub-definition">
+		<put-attribute name="title" value="Login iBlue" />
+		<put-attribute name="body" type="template"
+			value="/WEB-INF/views/tiles/pages/login.jsp" />
+	</definition>
+
+	<!-- Private section -->
 
 	<definition name="base-priv-definition"
 		template="/WEB-INF/views/tiles/layouts/privateLayout.jsp">
@@ -24,22 +34,10 @@
 			value="/WEB-INF/views/tiles/templates/footerPriv.jsp" />
 	</definition>
 
-	<definition name="availability" extends="base-pub-definition">
-		<put-attribute name="title" value="Disponibilidad" />
-		<put-attribute name="body" type="template"
-			value="/WEB-INF/views/tiles/pages/availability.jsp" />
-	</definition>
-
 	<definition name="spots" extends="base-priv-definition">
 		<put-attribute name="title" value="Aparcamiento" />
 		<put-attribute name="body" type="template"
 			value="/WEB-INF/views/tiles/pages/private/spots.jsp" />
-	</definition>
-
-	<definition name="us" extends="base-pub-definition">
-		<put-attribute name="title" value="Nosotros" />
-		<put-attribute name="body" type="template"
-			value="/WEB-INF/views/tiles/pages/us.jsp" />
 	</definition>
 
 	<definition name="home" extends="base-priv-definition">
@@ -53,17 +51,13 @@
 		<put-attribute name="body" type="template"
 			value="/WEB-INF/views/tiles/pages/private/map.jsp" />
 	</definition>
-	
-	<definition name="availability-priv" extends="base-priv-definition">
-		<put-attribute name="title" value="Mapa iBlue" />
+
+	<definition name="availability" extends="base-priv-definition">
+		<put-attribute name="title" value="Disponibilidad iBlue" />
 		<put-attribute name="body" type="template"
-			value="/WEB-INF/views/tiles/pages/availability.jsp" />
+			value="/WEB-INF/views/tiles/pages/private/availability.jsp" />
 	</definition>
 
-	<definition name="login" extends="base-pub-definition">
-		<put-attribute name="title" value="Login iBlue" />
-		<put-attribute name="body" type="template"
-			value="/WEB-INF/views/tiles/pages/login.jsp" />
-	</definition>
+
 
 </tiles-definitions>

@@ -38,7 +38,7 @@ public class SpotDAO implements SpotDAOInterface {
 			// Spot
 			spot = new Spot();
 			spot.setLatLong(spotI.getLatitude(), spotI.getLongitude());
-			spot.setMac(spot.getMac());
+			spot.setMac(spotI.getMac());
 			spot.setStatus(spotI.getStatus());
 		}
 
@@ -117,6 +117,21 @@ public class SpotDAO implements SpotDAOInterface {
 		open();
 		Query<Spot> query = session.createQuery("from Spot where id = :id", Spot.class);
 		query.setParameter("id", id);
+		List<Spot> spots = query.getResultList();
+		closeTx();
+		if (spots.isEmpty()) {
+			return null;
+		}
+		return spots.get(0);
+	}
+
+	public Spot getSpot(SpotInterface spotI) {
+		open();
+		Query<Spot> query = session.createQuery(
+				"from Spot where latitude = :lat and longitude = :lon and status = 1 and mac = :mac", Spot.class);
+		query.setParameter("latitude", spotI.getLatitude());
+		query.setParameter("longitude", spotI.getLongitude());
+		query.setParameter("max", spotI.getMac());
 		List<Spot> spots = query.getResultList();
 		closeTx();
 		if (spots.isEmpty()) {

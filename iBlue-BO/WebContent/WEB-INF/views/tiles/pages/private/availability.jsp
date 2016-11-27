@@ -1,4 +1,6 @@
-<script src="resources/js/availability.js"></script>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<script src="<c:url value="/resources/js/availability.js" />"></script>
 
 <div id="map"></div>
 

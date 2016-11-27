@@ -2,6 +2,7 @@ package com.iblue.bo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,48 +15,16 @@ public class AppController {
 	public String indexPage(Model model) {
 		// String message = "Welcome to Spring MVC";
 		// model.addAttribute("welcomeMessage", message);
-		return "availability";
+		return "login";
 	}
 	
-	@RequestMapping("/availability")
-	public String availabilityPage(Model model) {
+	@RequestMapping(value = "/bo/{name}", method = RequestMethod.GET)
+	public String boPage(@PathVariable("name") String name, Model model) {
 		// String message = "Welcome to Spring MVC";
 		// model.addAttribute("welcomeMessage", message);
-		return "availability";
+		return name;
 	}
 	
-	@RequestMapping("/availability-priv")
-	public String availabilityPrivPage(Model model) {
-		// String message = "Welcome to Spring MVC";
-		// model.addAttribute("welcomeMessage", message);
-		return "availability-priv";
-	}
-
-	@RequestMapping("/spots")
-	public String spotsPage(Model model) {
-
-		return "spots";
-	}
-
-	@RequestMapping("/us")
-	public String usPage(Model model) {
-
-		return "us";
-	}
-	
-	@RequestMapping("/home")
-	public String homePage(Model model) {
-
-		return "home";
-	}
-	
-	@RequestMapping("/map")
-	public String mapPage(Model model) {
-
-		return "map";
-	}
-
-
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public ModelAndView loginPage(@RequestParam(value = "error", required = false) String error,
 			@RequestParam(value = "logout", required = false) String logout) {
@@ -64,11 +33,6 @@ public class AppController {
 		if (error != null) {
 			model.addObject("error", "Credenciales incorrectas.");
 		}
-
-		
-		//if (logout != null) {
-		//	model.addObject("message", "Logged out from JournalDEV successfully.");
-		//}
 
 		model.setViewName("login");
 		return model;

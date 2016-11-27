@@ -26,6 +26,12 @@
 			</plugin>
 		</plugins>
 	</build>
+	<properties>
+		<springframework.version>4.3.4.RELEASE</springframework.version>
+		<springsecurity.version>4.3.4.RELEASE</springsecurity.version>
+		<hibernate.version>5.2.2.Final</hibernate.version>
+		<mysql.connector.version>5.1.37</mysql.connector.version>
+	</properties>
 	<dependencies>
 		<!-- JAX-RS, Jersey and JSON support for Jersey -->
 		<dependency>
@@ -55,19 +61,27 @@
 		</dependency>
 		<!-- END: JAX-RS, Jersey and JSON support for Jersey -->
 
-		<!-- MySQL database driver -->
+		<!-- MySQL -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.37</version>
+			<version>${mysql.connector.version}</version>
 		</dependency>
 
-		<!-- Hibernate framework -->
+		<!-- Hibernate -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.2.2.Final</version>
+			<version>${hibernate.version}</version>
 		</dependency>
+
+		<!-- Rabbit -->
+		<dependency>
+			<groupId>com.rabbitmq</groupId>
+			<artifactId>amqp-client</artifactId>
+			<version>3.6.5</version>
+		</dependency>
+
 
 	</dependencies>
 </project>

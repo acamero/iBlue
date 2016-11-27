@@ -9,7 +9,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.iblue.model.SpotDAOInterface;
 import com.iblue.model.SpotInterface;
+import com.iblue.model.db.Spot;
 import com.iblue.model.db.SpotDAO;
+import com.iblue.model.msg.SpotJSON;
 import com.iblue.queue.mq.QueueConfiguration;
 import com.iblue.queue.mq.QueueConnection;
 import com.rabbitmq.client.AMQP;
@@ -35,19 +37,26 @@ public class SpotReaderMQ {
 					String message = new String(body, "UTF-8");
 					ObjectMapper mapper = new ObjectMapper();
 					SpotInterface spot = mapper.readValue(message, SpotJSON.class);
-					// System.out.println("SPOT: " + spot.toString());
-					
+					System.out.println("SPOT: " + spot.toString());
+
 					SpotDAOInterface spotDAO = new SpotDAO();
-					if (spot.getStatus() == 0 && spot.getId() > 0) {
-						SpotInterface tmp = spotDAO.update(spot);
+					if (spot.getStatus() == 0) {
+						Spot tmp = (Spot)spotDAO.getSpot(spot);
 						if (tmp != null) {
-							System.out.println("Spot updated (id=" + tmp.getId() + ")");
+							tmp.setStatus(0);
+							tmp = (Spot)spotDAO.update(tmp);
+							if (tmp != null) {
+								System.out.println("Spot updated (id=" + tmp.getId() + ")");
+							} else {
+								System.out.println("Something weird happened");
+							}
 						} else {
-							System.out.println("Could not find the spot id=" + spot.getId());
+							System.out.println("Could not find the spot");
 						}
 					} else {
 						SpotInterface tmp = spotDAO.persist(spot);
 						System.out.println("Spot created (id=" + tmp.getId() + ")");
+
 					}
 				}
 			};

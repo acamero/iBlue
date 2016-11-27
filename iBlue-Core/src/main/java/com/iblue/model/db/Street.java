@@ -25,7 +25,7 @@ import com.iblue.model.StreetInterface;
 				@ColumnResult(name = "in_use_spots", type=Integer.class), @ColumnResult(name = "int_capacity", type=Integer.class) }) })
 
 @Entity
-@Table(name = "streets", schema = "iblue")
+@Table(name = "streets", schema = DbSchema.DB_SCHEMA)
 public class Street implements StreetInterface {
 
 	@Id

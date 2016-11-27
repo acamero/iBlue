@@ -13,6 +13,8 @@ public interface SpotDAOInterface {
 	
 	public SpotInterface getSpot(int id);
 	
+	public SpotInterface getSpot(SpotInterface spot);
+	
 	public List<? extends SpotInterface> findAll();
 	
 	public List<? extends SpotInterface> findAllActive();

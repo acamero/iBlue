@@ -17,9 +17,11 @@ import org.json.JSONException;
 import com.iblue.model.SpotDAOInterface;
 import com.iblue.model.SpotInterface;
 import com.iblue.model.db.SpotDAO;
-import com.iblue.service.data.SpotJSON;
-
-
+import com.iblue.queue.SpotSendQueueInterface;
+import com.iblue.queue.mq.send.SpotSendQueueService;
+import com.iblue.auth.AuthServiceInterface;
+import com.iblue.auth.BasicAuthService;
+import com.iblue.model.msg.SpotJSON;
 
 @Path("/spot")
 public class SpotService {
@@ -29,7 +31,7 @@ public class SpotService {
 	@Produces("application/json")
 	public Response getActiveSpots() throws JSONException {
 		System.out.println("Get all active spots");
-		
+
 		JSONArray jsonArray = new JSONArray();
 		SpotDAOInterface spotDAO = new SpotDAO();
 		List<? extends SpotInterface> spots = spotDAO.findAllActive();
@@ -40,13 +42,13 @@ public class SpotService {
 
 		return Response.status(200).entity(jsonArray.toString()).build();
 	}
-	
+
 	@GET
 	@Path("/active/{fromts}")
 	@Produces("application/json")
 	public Response getActiveSpotsFrom(@PathParam("fromts") String fromTsString) throws JSONException {
 		System.out.println("Active spots from " + fromTsString);
-		
+
 		JSONArray jsonArray = new JSONArray();
 		SpotDAOInterface spotDAO = new SpotDAO();
 		List<? extends SpotInterface> spots = spotDAO.findAllActive(Long.parseLong(fromTsString));
@@ -57,13 +59,13 @@ public class SpotService {
 
 		return Response.status(200).entity(jsonArray.toString()).build();
 	}
-	
+
 	@GET
 	@Path("/release/{fromts}")
 	@Produces("application/json")
 	public Response getReleasedSpotsFrom(@PathParam("fromts") String fromTsString) throws JSONException {
 		System.out.println("Released spots from " + fromTsString);
-		
+
 		JSONArray jsonArray = new JSONArray();
 		SpotDAOInterface spotDAO = new SpotDAO();
 		List<? extends SpotInterface> spots = spotDAO.findAllRelease(Long.parseLong(fromTsString));
@@ -74,35 +76,32 @@ public class SpotService {
 
 		return Response.status(200).entity(jsonArray.toString()).build();
 	}
-	
+
 	@POST
 	@Path("/set")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response setSpot(SpotJSON spot) {
-		if(spot==null) {
-			return Response.status(200).entity("Set Null spot").build();
+		if (spot == null) {
+			System.out.println("Set null spot");
+			return Response.status(200).entity("NULL").build();
 		}
-		
-		System.out.println("Set spot" + spot.toString() + " (id="+spot.getId());
-		
-		SpotDAOInterface spotDAO = new SpotDAO();
-		 String response = "";
-		
-		if (spot.getStatus() == 0 && spot.getId() > 0) {
-			SpotInterface tmp = spotDAO.update(spot);
-			if (tmp != null) {				
-				System.out.println("Spot updated (id="+tmp.getId()+")");
-				response = String.valueOf(tmp.getId());
+
+		System.out.println("Set spot" + spot.toString() + " (id=" + spot.getId() + ")");
+
+		String response = "NO";
+
+		AuthServiceInterface auth = new BasicAuthService();
+		if (auth.isValidMsg(spot)) {
+			SpotSendQueueInterface queue = SpotSendQueueService.getInstance();
+			if (queue.send(spot)) {
+				response = "OK";
 			} else {
-				System.out.println("Could not find the spot id="+spot.getId());
-				response = "ERROR";
+				System.out.println("Unable to put message in queue");
 			}
 		} else {
-			SpotInterface tmp = spotDAO.persist(spot);
-			System.out.println("Spot created (id="+tmp.getId()+")");
-			response = String.valueOf(tmp.getId());
+			System.out.println("Unauthorized message");
 		}
-		
+
 		return Response.status(200).entity(response).build();
 	}
 }

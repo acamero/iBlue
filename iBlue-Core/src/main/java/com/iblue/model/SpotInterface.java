@@ -7,6 +7,5 @@ public interface SpotInterface {
 	public String getMac();
 	public int getId();
 	public int getStatus();
-	public void setLatLong(float latitude, float longitude);
-	
+		
 }
