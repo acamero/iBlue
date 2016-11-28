@@ -3,7 +3,6 @@
 	<name>iBlue-Service</name>
 	<comment></comment>
 	<projects>
-		<project>iBlue-Core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

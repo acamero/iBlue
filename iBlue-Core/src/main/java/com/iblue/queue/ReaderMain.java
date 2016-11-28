@@ -34,11 +34,8 @@ public class ReaderMain {
 		SpotReaderMQ reader = new SpotReaderMQ();
 
 		System.out.println("Start reading queue");
-		reader.startReceiving();
+		reader.startReceiving();		
 		
-		while(true) {
-			// continue receiving
-		}
 	}
 	
 
