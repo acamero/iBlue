@@ -62,22 +62,20 @@ body {
 .clear {
 	clear: both;
 }
+
+#main-body {
+	margin-left: 120px;
+	margin-right: 120px;
+}
 /*******************************************************************************************/
 
 #map {
-	height: 450px;
-	background-color: grey;
-	margin-left: 120px;
-	margin-right: 120px;
+	height: 450px;	
 }
 
 #left-map {
 	width: 60%;
 	float:left;
-}
-
-#left-map #map {
-	margin-right: 0;
 }
 
 #right-map {

@@ -9,5 +9,6 @@ public interface StreetInterface {
 	public int getStatus();	
 	public int getCapacity();	
 	public int getId();
+	public int getType();
 	
 }

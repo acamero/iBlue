@@ -72,30 +72,6 @@ function initMap() {
 	global.lastUpdate = Date.now();
 }
 
-var HttpClient = function() {
-	this.get = function(url, callback) {
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (xhttp.readyState == 4 && xhttp.status == 200) {
-				callback(xhttp.responseText);
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	this.postJson = function(url, json, callback) {
-		var xhttp = new XMLHttpRequest();
-		xhttp.open("post", url, true);
-		xhttp.setRequestHeader('Content-Type',
-				'application/json; charset=UTF-8');
-
-		// send the collected data as JSON
-		xhttp.send(json);
-
-		xhttp.onloadend = callback(xhttp.responseText);
-	}
-}
 
 function initMarkers() {
 	dbClient = new HttpClient();

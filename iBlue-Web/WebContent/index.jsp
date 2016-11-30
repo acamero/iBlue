@@ -59,28 +59,27 @@
     <!-- Promos -->
     <div class="container-fluid">
         <div class="row promo">
-            <a href="#">
-				<div class="col-md-4 promo-item item-1">
-					<h3>
-						White Paper
-					</h3>
-				</div>
-            </a>
-            <a href="#">
-				<div class="col-md-4 promo-item item-2">
-					<h3>
-						Parking Allocation
-					</h3>
-				</div>
-            </a>
-			
-	    	<a href="#">
-				<div class="col-md-4 promo-item item-3">
-					<h3>
-						Other stuff
-					</h3>
-				</div>
-            </a>
+        <div class="col-md-4 promo-item item-1">
+        	<h3>
+	            <a href="#">			
+							White Paper				
+	            </a>
+            </h3>
+		</div>
+            <div class="col-md-4 promo-item item-2">
+            <h3>
+	            <a href="#">			
+							Parking Allocation				
+	            </a>
+            </h3>
+			</div>
+			<div class="col-md-4 promo-item item-3">
+	    	<h3>
+	            <a href="#">			
+							Other Stuff				
+	            </a>
+            </h3>
+            </div>
         </div>
     </div>
 		<!-- /.container-fluid -->

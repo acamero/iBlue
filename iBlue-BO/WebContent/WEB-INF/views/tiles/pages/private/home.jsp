@@ -1,4 +1,4 @@
-<div>
+<h1>
 	Bienvenido!
-</div>
+</h1>
 

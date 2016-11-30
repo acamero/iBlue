@@ -7,6 +7,7 @@ import org.hibernate.query.Query;
 
 import com.iblue.model.ParkingAllocInterface;
 import com.iblue.model.SpotInterface;
+import com.iblue.model.StreetAvailabilityInterface;
 
 public class ParkingAlloc implements ParkingAllocInterface {
 
@@ -62,6 +63,21 @@ public class ParkingAlloc implements ParkingAllocInterface {
 		List<StreetAvailability> area = query.getResultList();
 		closeTx();
 		return area;
+	}
+	
+	public StreetAvailabilityInterface parkMeClosest(SpotInterface spot) {
+		open();
+		String queryString = "CALL " + DbSchema.DB_SCHEMA + ".closest_parking(:latitude, :longitude)";
+		@SuppressWarnings("rawtypes")
+		Query query = session.createNativeQuery(queryString, "AreaMapResultSet")
+				.setParameter("latitude", spot.getLatitude()).setParameter("longitude", spot.getLongitude());
+		@SuppressWarnings("unchecked")
+		List<StreetAvailability> area = query.getResultList();
+		closeTx();
+		if(area.isEmpty()) {
+			return null;
+		}
+		return area.get(0);
 	}
 
 }

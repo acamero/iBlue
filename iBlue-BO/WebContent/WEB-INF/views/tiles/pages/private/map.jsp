@@ -4,6 +4,7 @@
 
 <div id="left-map">
 	<div id="map"></div>
+	<div><a href="javascript:reload();">Cargar posici&oacute;n</a></div>
 </div>
 
 <div id="right-map">
@@ -49,6 +50,10 @@
 			<tr>
 				<td>Capacidad:</td>
 				<td><input type="text" name="capacity" id="capacity" value="" /></td>
+			</tr>
+			<tr>
+				<td>Tipo:</td>
+				<td><input type="text" name="type" id="type" value="" /></td>
 			</tr>
 		</table>
 		<input type="hidden" id="street-id" />

@@ -11,19 +11,23 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 	private float longitude2;
 	private int status;
 	private int capacity;
+	private int type;
 	private int id;
 	private String token;
 	private String userId;
-	
-	public StreetJSON(){}
-	
-	public StreetJSON(float latitude1, float longitude1, float latitude2, float longitude2, int status, int capacity) {
+
+	public StreetJSON() {
+	}
+
+	public StreetJSON(float latitude1, float longitude1, float latitude2, float longitude2, int status, 
+			int capacity, int type) {
 		this.latitude1 = latitude1;
 		this.longitude1 = longitude1;
 		this.latitude2 = latitude2;
 		this.longitude2 = longitude2;
 		this.status = status;
 		this.capacity = capacity;
+		this.type = type;
 	}
 
 	public float getLatitude1() {
@@ -81,33 +85,28 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	public void setLatLong1(float latitude1, float longitude1) {
 		this.latitude1 = latitude1;
-		this.longitude1 = longitude1;		
+		this.longitude1 = longitude1;
 	}
-	
+
 	public void setLatLong2(float latitude2, float longitude2) {
 		this.latitude2 = latitude2;
-		this.longitude2 = longitude2;		
+		this.longitude2 = longitude2;
 	}
 
 	public String toString() {
-		return "{"+
-				"\"latitude1\":\""+latitude1+"\","+
-				"\"longitude1\":\""+longitude1+"\","+
-				"\"latitude2\":\""+latitude2+"\","+
-				"\"longitude2\":\""+longitude2+"\","+
-				"\"status\":\""+status+"\","+
-				"\"capacity\":\""+capacity+"\","+
-				"\"id\":\""+id+"\""+
-				"}";
+		return "{" + "\"latitude1\":\"" + latitude1 + "\"," + "\"longitude1\":\"" + longitude1 + "\","
+				+ "\"latitude2\":\"" + latitude2 + "\"," + "\"longitude2\":\"" + longitude2 + "\"," + "\"status\":\""
+				+ status + "\"," + "\"capacity\":\"" + capacity + "\"," 
+				+ "\"type\":\"" + type +"\"," +"\"id\":\"" + id + "\"" + "}";
 	}
-	
+
 	public String getToken() {
 		return token;
 	}
-	
+
 	public void setToken(String token) {
 		this.token = token;
 	}
@@ -115,8 +114,16 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 	public String getUserId() {
 		return userId;
 	}
-	
+
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+	
+	public int getType() {
+		return type;
+	}
+	
+	public void setType(int type) {
+		this.type = type;
 	}
 }

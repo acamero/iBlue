@@ -4,15 +4,12 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import com.iblue.auth.AuthServiceInterface;
 import com.iblue.auth.BasicAuthService;
@@ -48,32 +45,34 @@ public class StreetService {
 				.build();
 	}
 
-	@GET
-	@Path("/active")
-	@Produces("application/json")
-	public Response getActiveStreets() throws JSONException {
-		System.out.println("Get all active streets");
-
-		JSONArray jsonArray = new JSONArray();
-		StreetDAOInterface dao = new StreetDAO();
-		List<? extends StreetInterface> streets = dao.findAllActive();
-
-		for (StreetInterface st : streets) {
-			// System.out.println(st.toString());
-			jsonArray.put(st.toString());
-		}
-
-		return Response.status(200).entity(jsonArray.toString()).build();
-	}
+	
+//	@GET
+//	@Path("/active")
+//	@Produces("application/json")
+//	public Response getActiveStreets() throws JSONException {
+//		System.out.println("Get all active streets");
+//
+//		JSONArray jsonArray = new JSONArray();
+//		StreetDAOInterface dao = new StreetDAO();
+//		List<? extends StreetInterface> streets = dao.findAllActive();
+//
+//		for (StreetInterface st : streets) {
+//			// System.out.println(st.toString());
+//			jsonArray.put(st.toString());
+//		}
+//
+//		return Response.status(200).entity(jsonArray.toString()).build();
+//	}
 
 	@POST
 	@Path("/set")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response setStreet(StreetJSON street) {
-		System.out.println("Set street");
+	public Response setStreet(StreetJSON street) {		
 		if (street == null) {
 			return Response.status(200).entity("Null street").build();
 		}
+		System.out.println("Set street "+ street.toString());
+		
 
 		AuthServiceInterface auth = new BasicAuthService();
 		String response = "";

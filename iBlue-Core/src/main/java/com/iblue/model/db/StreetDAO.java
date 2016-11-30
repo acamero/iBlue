@@ -33,6 +33,7 @@ public class StreetDAO implements StreetDAOInterface {
 			street.setLatLong1(streetI.getLatitude1(), streetI.getLongitude1());
 			street.setLatLong2(streetI.getLatitude2(), streetI.getLongitude2());
 			street.setStatus(streetI.getStatus());
+			street.setType(streetI.getType());
 		}
 
 		open();
@@ -60,6 +61,7 @@ public class StreetDAO implements StreetDAOInterface {
 			street.setLatLong1(streetI.getLatitude1(), streetI.getLongitude1());
 			street.setLatLong2(streetI.getLatitude2(), streetI.getLongitude2());
 			street.setStatus(streetI.getStatus());
+			street.setType(streetI.getType());
 		}
 
 		open();

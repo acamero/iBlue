@@ -17,12 +17,16 @@ import com.iblue.coord.ReferenceEllipsoid;
 import com.iblue.coord.UTM;
 import com.iblue.model.StreetInterface;
 
-
 @SqlResultSetMapping(name = "AreaMapResultSet", classes = {
-		@ConstructorResult(targetClass = StreetAvailability.class, columns = { @ColumnResult(name = "pk_id", type=Integer.class),
-				@ColumnResult(name = "float_latitude_1", type=Float.class), @ColumnResult(name = "float_longitude_1", type=Float.class),
-				@ColumnResult(name = "float_latitude_2", type=Float.class), @ColumnResult(name = "float_longitude_2", type=Float.class),
-				@ColumnResult(name = "in_use_spots", type=Integer.class), @ColumnResult(name = "int_capacity", type=Integer.class) }) })
+		@ConstructorResult(targetClass = StreetAvailability.class, columns = {
+				@ColumnResult(name = "pk_id", type = Integer.class),
+				@ColumnResult(name = "float_latitude_1", type = Float.class),
+				@ColumnResult(name = "float_longitude_1", type = Float.class),
+				@ColumnResult(name = "float_latitude_2", type = Float.class),
+				@ColumnResult(name = "float_longitude_2", type = Float.class),
+				@ColumnResult(name = "in_use_spots", type = Integer.class),
+				@ColumnResult(name = "int_capacity", type = Integer.class),
+				@ColumnResult(name = "int_type", type = Integer.class) }) })
 
 @Entity
 @Table(name = "streets", schema = DbSchema.DB_SCHEMA)
@@ -77,6 +81,9 @@ public class Street implements StreetInterface {
 
 	@Column(name = "int_capacity", columnDefinition = "SMALLINT")
 	private int capacity;
+
+	@Column(name = "int_type", columnDefinition = "SMALLINT")
+	private int type;
 
 	// Status=1 -> street is available
 	@Column(name = "int_status", columnDefinition = "TINYINT")
@@ -245,6 +252,14 @@ public class Street implements StreetInterface {
 		return lineCoeffC;
 	}
 
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
 	public String toString() {
 		return "{" + "\"latitude1\":\"" + latitude1 + "\"," + "\"longitude1\":\"" + longitude1 + "\","
 				+ "\"northing1\":\"" + northing1 + "\"," + "\"easting1\":\"" + easting1 + "\"," + "\"latitudeZone1\":\""
@@ -257,7 +272,9 @@ public class Street implements StreetInterface {
 				"\"lineCoeffA\":\"" + lineCoeffA + "\"," + "\"lineCoeffB\":\"" + lineCoeffB + "\","
 				+ "\"lineCoeffC\":\"" + lineCoeffC + "\"," + "\"sqrtA2B2\":\"" + sqrtA2B2 + "\"," +
 
-				"\"status\":\"" + status + "\"," + "\"capacity\":\"" + capacity + "\"," + "\"id\":\"" + id + "\""
-				+ "\"createTs\":\"" + createTs + "\"" + "\"updateTs\":\"" + updateTs + "\"" + "}";
+				"\"status\":\"" + status + "\"," + "\"capacity\":\"" + capacity + "\"," + "\"type\":\"" + type + "\"," +
+
+				"\"id\":\"" + id + "\"" + "\"createTs\":\"" + createTs + "\"" + "\"updateTs\":\"" + updateTs + "\""
+				+ "}";
 	}
 }
