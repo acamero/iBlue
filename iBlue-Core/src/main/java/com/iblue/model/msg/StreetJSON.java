@@ -1,14 +1,17 @@
 package com.iblue.model.msg;
 
 import com.iblue.model.StreetInterface;
+
+import java.math.BigDecimal;
+
 import com.iblue.auth.AuthMsgInterface;
 
 public class StreetJSON implements StreetInterface, AuthMsgInterface {
 
-	private float latitude1;
-	private float longitude1;
-	private float latitude2;
-	private float longitude2;
+	private BigDecimal latitude1;
+	private BigDecimal longitude1;
+	private BigDecimal latitude2;
+	private BigDecimal longitude2;
 	private int status;
 	private int capacity;
 	private int type;
@@ -19,7 +22,7 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 	public StreetJSON() {
 	}
 
-	public StreetJSON(float latitude1, float longitude1, float latitude2, float longitude2, int status, 
+	public StreetJSON(BigDecimal latitude1, BigDecimal longitude1, BigDecimal latitude2, BigDecimal longitude2, int status, 
 			int capacity, int type) {
 		this.latitude1 = latitude1;
 		this.longitude1 = longitude1;
@@ -30,35 +33,35 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 		this.type = type;
 	}
 
-	public float getLatitude1() {
+	public BigDecimal getLatitude1() {
 		return latitude1;
 	}
 
-	public void setLatitude1(float latitude1) {
+	public void setLatitude1(BigDecimal latitude1) {
 		this.latitude1 = latitude1;
 	}
 
-	public float getLongitude1() {
+	public BigDecimal getLongitude1() {
 		return longitude1;
 	}
 
-	public void setLongitude1(float longitude1) {
+	public void setLongitude1(BigDecimal longitude1) {
 		this.longitude1 = longitude1;
 	}
 
-	public float getLatitude2() {
+	public BigDecimal getLatitude2() {
 		return latitude2;
 	}
 
-	public void setLatitude2(float latitude2) {
+	public void setLatitude2(BigDecimal latitude2) {
 		this.latitude2 = latitude2;
 	}
 
-	public float getLongitude2() {
+	public BigDecimal getLongitude2() {
 		return longitude2;
 	}
 
-	public void setLongitude2(float longitude2) {
+	public void setLongitude2(BigDecimal longitude2) {
 		this.longitude2 = longitude2;
 	}
 
@@ -86,12 +89,12 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 		this.id = id;
 	}
 
-	public void setLatLong1(float latitude1, float longitude1) {
+	public void setLatLong1(BigDecimal latitude1, BigDecimal longitude1) {
 		this.latitude1 = latitude1;
 		this.longitude1 = longitude1;
 	}
 
-	public void setLatLong2(float latitude2, float longitude2) {
+	public void setLatLong2(BigDecimal latitude2, BigDecimal longitude2) {
 		this.latitude2 = latitude2;
 		this.longitude2 = longitude2;
 	}

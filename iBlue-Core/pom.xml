@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.iblue</groupId>
 	<artifactId>iBlue-Core</artifactId>
-	<version>1.0.4-RELEASE</version>
+	<version>1.0.7-RELEASE</version>
 	<name>iBlue-Core</name>
-	
+
 	<build>
 
 		<plugins>
@@ -68,12 +68,15 @@
 
 		</plugins>
 	</build>
+	
 	<properties>
 		<springframework.version>4.3.4.RELEASE</springframework.version>
 		<springsecurity.version>4.3.4.RELEASE</springsecurity.version>
 		<hibernate.version>5.2.2.Final</hibernate.version>
 		<mysql.connector.version>5.1.37</mysql.connector.version>
+		<c3p0.version>0.9.2</c3p0.version>
 	</properties>
+	
 	<dependencies>
 		<!-- JAX-RS, Jersey and JSON support for Jersey -->
 		<dependency>
@@ -116,6 +119,14 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/c3p0/c3p0 -->
+		<dependency>
+			<groupId>com.mchange</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>${c3p0.version}</version>
+		</dependency>
+
 
 		<!-- Rabbit -->
 		<dependency>

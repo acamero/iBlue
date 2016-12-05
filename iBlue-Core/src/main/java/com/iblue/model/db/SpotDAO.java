@@ -129,8 +129,8 @@ public class SpotDAO implements SpotDAOInterface {
 		open();
 		Query<Spot> query = session.createQuery(
 				"from Spot where latitude = :lat and longitude = :lon and status = 1 and mac = :mac", Spot.class);
-		query.setParameter("lat", spotI.getLatitude());
-		query.setParameter("lon", spotI.getLongitude());
+		query.setParameter("lat", spotI.getLatitude().setScale(Spot.LAT_LON_SCALE));
+		query.setParameter("lon", spotI.getLongitude().setScale(Spot.LAT_LON_SCALE));
 		query.setParameter("mac", spotI.getMac());
 		List<Spot> spots = query.getResultList();
 		closeTx();

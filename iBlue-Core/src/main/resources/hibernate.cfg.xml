@@ -16,13 +16,17 @@
 		<property name="format_sql">true</property>
 		<property name="hbm2ddl.auto">validate</property>
 
-		<!-- JDBC connection pool (use the built-in) -->
-		<property name="connection.pool_size">5</property>
-		<property name="current_session_context_class">thread</property>
-
+		<!-- connection pool -->
+		<property name="c3p0.min_size">5</property>
+		<property name="c3p0.max_size">20</property>
+		<property name="c3p0.timeout">1800</property>
+		<property name="c3p0.max_statements">50</property>
+		<!-- no "connection.pool_size" entry! -->
+		<!-- <property name="connection.pool_size">5</property> <property name="current_session_context_class">thread</property> -->
+		
 		<mapping class="com.iblue.model.db.Spot" />
 		<mapping class="com.iblue.model.db.Street" />
-		
+
 
 
 	</session-factory>

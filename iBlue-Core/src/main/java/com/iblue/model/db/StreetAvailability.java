@@ -1,19 +1,21 @@
 package com.iblue.model.db;
 
+import java.math.BigDecimal;
+
 import com.iblue.model.StreetAvailabilityInterface;
 
 public class StreetAvailability implements StreetAvailabilityInterface {
 
 	private int id;
-	private float latitude1;
-	private float longitude1;
-	private float latitude2;
-	private float longitude2;
+	private BigDecimal latitude1;
+	private BigDecimal longitude1;
+	private BigDecimal latitude2;
+	private BigDecimal longitude2;
 	private int inUseSpots;
 	private int capacity;
 	private int type;
 
-	public StreetAvailability(int id, float latitude1, float longitude1, float latitude2, float longitude2, int inUse,
+	public StreetAvailability(int id, BigDecimal latitude1, BigDecimal longitude1, BigDecimal latitude2, BigDecimal longitude2, int inUse,
 			int capacity, int type) {
 		this.id = id;
 		this.latitude1 = latitude1;
@@ -29,19 +31,19 @@ public class StreetAvailability implements StreetAvailabilityInterface {
 		return id;
 	}
 
-	public float getLatitude1() {
+	public BigDecimal getLatitude1() {
 		return latitude1;
 	}
 
-	public float getLongitude1() {
+	public BigDecimal getLongitude1() {
 		return longitude1;
 	}
 
-	public float getLatitude2() {
+	public BigDecimal getLatitude2() {
 		return latitude2;
 	}
 
-	public float getLongitude2() {
+	public BigDecimal getLongitude2() {
 		return longitude2;
 	}
 

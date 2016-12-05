@@ -1,5 +1,6 @@
 package com.iblue.model.db;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
@@ -20,10 +21,10 @@ import com.iblue.model.StreetInterface;
 @SqlResultSetMapping(name = "AreaMapResultSet", classes = {
 		@ConstructorResult(targetClass = StreetAvailability.class, columns = {
 				@ColumnResult(name = "pk_id", type = Integer.class),
-				@ColumnResult(name = "float_latitude_1", type = Float.class),
-				@ColumnResult(name = "float_longitude_1", type = Float.class),
-				@ColumnResult(name = "float_latitude_2", type = Float.class),
-				@ColumnResult(name = "float_longitude_2", type = Float.class),
+				@ColumnResult(name = "decimal_latitude_1", type = BigDecimal.class),
+				@ColumnResult(name = "decimal_longitude_1", type = BigDecimal.class),
+				@ColumnResult(name = "decimal_latitude_2", type = BigDecimal.class),
+				@ColumnResult(name = "decimal_longitude_2", type = BigDecimal.class),
 				@ColumnResult(name = "in_use_spots", type = Integer.class),
 				@ColumnResult(name = "int_capacity", type = Integer.class),
 				@ColumnResult(name = "int_type", type = Integer.class) }) })
@@ -31,6 +32,8 @@ import com.iblue.model.StreetInterface;
 @Entity
 @Table(name = "streets", schema = DbSchema.DB_SCHEMA)
 public class Street implements StreetInterface {
+	
+	protected static final int LAT_LON_SCALE = 6;
 
 	@Id
 	@Column(name = "pk_id")
@@ -39,10 +42,10 @@ public class Street implements StreetInterface {
 
 	// Start of the street
 	// Latitude and longitude in degrees
-	@Column(name = "float_latitude_1")
-	private float latitude1;
-	@Column(name = "float_longitude_1")
-	private float longitude1;
+	@Column(name = "decimal_latitude_1", precision=10, scale=LAT_LON_SCALE)
+	private BigDecimal latitude1;
+	@Column(name = "decimal_longitude_1", precision=10, scale=LAT_LON_SCALE)
+	private BigDecimal longitude1;
 	// UTM coordinates
 	@Column(name = "float_northing_1")
 	private float northing1;
@@ -55,10 +58,10 @@ public class Street implements StreetInterface {
 
 	// End of the street
 	// Latitude and longitude in degrees
-	@Column(name = "float_latitude_2")
-	private float latitude2;
-	@Column(name = "float_longitude_2")
-	private float longitude2;
+	@Column(name = "decimal_latitude_2", precision=10, scale=LAT_LON_SCALE)
+	private BigDecimal latitude2;
+	@Column(name = "decimal_longitude_2", precision=10, scale=LAT_LON_SCALE)
+	private BigDecimal longitude2;
 	// UTM coordinates
 	@Column(name = "float_northing_2")
 	private float northing2;
@@ -132,15 +135,15 @@ public class Street implements StreetInterface {
 		return id;
 	}
 
-	public void setLatLong1(float latitude1, float longitude1) {
-		this.latitude1 = latitude1;
-		this.longitude1 = longitude1;
+	public void setLatLong1(BigDecimal latitude1, BigDecimal longitude1) {
+		this.latitude1 = latitude1.setScale(LAT_LON_SCALE);
+		this.longitude1 = longitude1.setScale(LAT_LON_SCALE);
 		setUTM1();
 		setLineCoeff();
 	}
 
 	private void setUTM1() {
-		UTM utm = UTM.latLongToUtm(LatLong.valueOf(latitude1, longitude1, LatLong.DEGREE_ANGLE),
+		UTM utm = UTM.latLongToUtm(LatLong.valueOf(latitude1.doubleValue(), longitude1.doubleValue(), LatLong.DEGREE_ANGLE),
 				ReferenceEllipsoid.WGS84);
 		northing1 = (float) utm.northingValue();
 		easting1 = (float) utm.eastingValue();
@@ -148,11 +151,11 @@ public class Street implements StreetInterface {
 		latitudeZone1 = utm.latitudeZone();
 	}
 
-	public float getLatitude1() {
+	public BigDecimal getLatitude1() {
 		return latitude1;
 	}
 
-	public float getLongitude1() {
+	public BigDecimal getLongitude1() {
 		return longitude1;
 	}
 
@@ -172,15 +175,15 @@ public class Street implements StreetInterface {
 		return latitudeZone1;
 	}
 
-	public void setLatLong2(float latitude2, float longitude2) {
-		this.latitude2 = latitude2;
-		this.longitude2 = longitude2;
+	public void setLatLong2(BigDecimal latitude2, BigDecimal longitude2) {
+		this.latitude2 = latitude2.setScale(LAT_LON_SCALE);
+		this.longitude2 = longitude2.setScale(LAT_LON_SCALE);
 		setUTM2();
 		setLineCoeff();
 	}
 
 	private void setUTM2() {
-		UTM utm = UTM.latLongToUtm(LatLong.valueOf(latitude2, longitude2, LatLong.DEGREE_ANGLE),
+		UTM utm = UTM.latLongToUtm(LatLong.valueOf(latitude2.doubleValue(), longitude2.doubleValue(), LatLong.DEGREE_ANGLE),
 				ReferenceEllipsoid.WGS84);
 		northing2 = (float) utm.northingValue();
 		easting2 = (float) utm.eastingValue();
@@ -188,11 +191,11 @@ public class Street implements StreetInterface {
 		latitudeZone2 = utm.latitudeZone();
 	}
 
-	public float getLatitude2() {
+	public BigDecimal getLatitude2() {
 		return latitude2;
 	}
 
-	public float getLongitude2() {
+	public BigDecimal getLongitude2() {
 		return longitude2;
 	}
 

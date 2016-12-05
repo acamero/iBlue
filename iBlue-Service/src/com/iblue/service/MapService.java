@@ -1,5 +1,6 @@
 package com.iblue.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -24,12 +25,12 @@ public class MapService {
 	@Produces("application/json")
 	public Response getActiveStreets(@PathParam("latitude") float latitude, @PathParam("longitude") float longitude)
 			throws JSONException {
-		System.out.println("Map availability lat="+latitude+" lon="+longitude);
-		
+		System.out.println("Map availability lat=" + latitude + " lon=" + longitude);
+
 		JSONArray jsonArray = new JSONArray();
 		ParkingAllocInterface alloc = new ParkingAlloc();
 		SpotJSON spot = new SpotJSON();
-		spot.setLatLong(latitude, longitude);		
+		spot.setLatLong(BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude));
 		List<? extends StreetAvailabilityInterface> map = alloc.getNearStreetAvailability(spot);
 		for (StreetAvailabilityInterface st : map) {
 			// System.out.println(st.toString());

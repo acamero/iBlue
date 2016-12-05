@@ -24,6 +24,29 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<!-- Always download and attach dependencies source code -->
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>false</downloadJavadocs>
+					<!-- Avoid type mvn eclipse:eclipse -Dwtpversion=2.0 -->
+					<wtpversion>2.0</wtpversion>
+				</configuration>
+			</plugin>
+			<!-- For Maven Tomcat Plugin -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<path>/iBlue-Service</path>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 	<properties>
@@ -31,6 +54,7 @@
 		<springsecurity.version>4.3.4.RELEASE</springsecurity.version>
 		<hibernate.version>5.2.2.Final</hibernate.version>
 		<mysql.connector.version>5.1.37</mysql.connector.version>
+		<iblue.core.version>1.0.7-RELEASE</iblue.core.version>
 	</properties>
 	<dependencies>
 		<!-- JAX-RS, Jersey and JSON support for Jersey -->
@@ -86,8 +110,8 @@
 		<dependency>
 			<groupId>com.iblue</groupId>
 			<artifactId>iBlue-Core</artifactId>
-			<version>1.0.4-RELEASE</version>
-			
+			<version>${iblue.core.version}</version>
+
 		</dependency>
 
 	</dependencies>

@@ -1,5 +1,6 @@
 package com.iblue.model.db;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
@@ -14,10 +15,11 @@ import com.iblue.coord.ReferenceEllipsoid;
 import com.iblue.coord.UTM;
 import com.iblue.model.SpotInterface;
 
-
 @Entity
 @Table(name = "spots", schema = DbSchema.DB_SCHEMA)
 public class Spot implements SpotInterface {
+	
+	protected static final int LAT_LON_SCALE = 6;
 
 	@Id
 	@Column(name = "pk_id")
@@ -25,10 +27,10 @@ public class Spot implements SpotInterface {
 	private int id;
 
 	// Latitude and longitude in degrees
-	@Column(name = "float_latitude")
-	private float latitude;
-	@Column(name = "float_longitude")
-	private float longitude;
+	@Column(name = "decimal_latitude", precision=10, scale=LAT_LON_SCALE)
+	private BigDecimal latitude;
+	@Column(name = "decimal_longitude", precision=10, scale=LAT_LON_SCALE)
+	private BigDecimal longitude;
 
 	// UTM coordinates
 	@Column(name = "float_northing")
@@ -44,7 +46,7 @@ public class Spot implements SpotInterface {
 	@Column(name = "fk_street_id")
 	private int streetId;
 
-	@Column(name = "str_mac", length=45)
+	@Column(name = "str_mac", length = 45)
 	private String mac;
 
 	@Column(name = "int_status", columnDefinition = "TINYINT")
@@ -59,7 +61,7 @@ public class Spot implements SpotInterface {
 	}
 
 	private void setUTM() {
-		UTM utm = UTM.latLongToUtm(LatLong.valueOf(latitude, longitude, LatLong.DEGREE_ANGLE),
+		UTM utm = UTM.latLongToUtm(LatLong.valueOf(latitude.floatValue(), longitude.floatValue(), LatLong.DEGREE_ANGLE),
 				ReferenceEllipsoid.WGS84);
 		northing = (float) utm.northingValue();
 		easting = (float) utm.eastingValue();
@@ -67,17 +69,17 @@ public class Spot implements SpotInterface {
 		latitudeZone = utm.latitudeZone();
 	}
 
-	public float getLatitude() {
+	public BigDecimal getLatitude() {
 		return latitude;
 	}
 
-	public float getLongitude() {
+	public BigDecimal getLongitude() {
 		return longitude;
 	}
 
-	public void setLatLong(float latitude, float longitude) {
-		this.latitude = latitude;
-		this.longitude = longitude;
+	public void setLatLong(BigDecimal latitude, BigDecimal longitude) {
+		this.latitude = latitude.setScale(LAT_LON_SCALE);
+		this.longitude = longitude.setScale(LAT_LON_SCALE);
 		setUTM();
 	}
 
@@ -135,7 +137,7 @@ public class Spot implements SpotInterface {
 
 	@Override
 	public String toString() {
-		return "{\"latitude\":\"" + this.latitude + "\",\"longitude\":\"" + this.longitude + "\",\"mac\":\"" + this.mac
+		return "{\"latitude\":\"" + getLatitude() + "\",\"longitude\":\"" + getLongitude() + "\",\"mac\":\"" + this.mac
 				+ "\",\"status\":\"" + this.status + "\",\"id\":\"" + this.id + "\"}";
 	}
 

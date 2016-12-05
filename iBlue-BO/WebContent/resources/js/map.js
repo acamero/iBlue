@@ -100,9 +100,13 @@ function loadForm(id) {
 
 function updateStreet() {
 	var fromLat = document.getElementById("from-latitude").value;
+	fromLat = parseFloat(fromLat).toFixed(6);
 	var fromLon = document.getElementById("from-longitude").value;
+	fromLon = parseFloat(fromLon).toFixed(6);
 	var toLat = document.getElementById("to-latitude").value;
+	toLat = parseFloat(toLat).toFixed(6);
 	var toLon = document.getElementById("to-longitude").value;
+	toLon = parseFloat(toLon).toFixed(6);
 	var status = document.getElementById("status").checked ? 1 : 0;
 	var cap = document.getElementById("capacity").value;
 	var id = document.getElementById("street-id").value;

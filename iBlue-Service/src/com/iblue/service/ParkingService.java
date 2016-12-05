@@ -1,5 +1,7 @@
 package com.iblue.service;
 
+import java.math.BigDecimal;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -21,13 +23,13 @@ public class ParkingService {
 	@Produces("application/json")
 	public Response getActiveStreets(@PathParam("latitude") float latitude, @PathParam("longitude") float longitude)
 			throws JSONException {
-		System.out.println("Parking closest to lat="+latitude+" lon="+longitude);
-		
+		System.out.println("Parking closest to lat=" + latitude + " lon=" + longitude);
+
 		ParkingAllocInterface alloc = new ParkingAlloc();
 		SpotJSON spot = new SpotJSON();
-		spot.setLatLong(latitude, longitude);		
+		spot.setLatLong(BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude));
 		StreetAvailabilityInterface street = alloc.parkMeClosest(spot);
-		if( street!=null ) {
+		if (street != null) {
 			return Response.status(200).entity(street.toString()).build();
 		} else {
 			return Response.status(200).entity("No street available in the neighborhood").build();

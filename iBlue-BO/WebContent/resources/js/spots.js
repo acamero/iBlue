@@ -127,7 +127,9 @@ function loadForm(id) {
 
 function updateSpot() {
 	var lat = document.getElementById("latitude").value;
+	lat = parseFloat(lat).toFixed(6);
 	var lon = document.getElementById("longitude").value;
+	lon = parseFloat(lon).toFixed(6);
 	var status = document.getElementById("status").checked ? 1 : 0;
 	var mac = document.getElementById("mac").value;
 

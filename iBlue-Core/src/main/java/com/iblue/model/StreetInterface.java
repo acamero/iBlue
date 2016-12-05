@@ -1,11 +1,13 @@
 package com.iblue.model;
 
+import java.math.BigDecimal;
+
 public interface StreetInterface {
 
-	public float getLatitude1();		
-	public float getLongitude1();	
-	public float getLatitude2();	
-	public float getLongitude2();	
+	public BigDecimal getLatitude1();		
+	public BigDecimal getLongitude1();	
+	public BigDecimal getLatitude2();	
+	public BigDecimal getLongitude2();	
 	public int getStatus();	
 	public int getCapacity();	
 	public int getId();
