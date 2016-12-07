@@ -57,6 +57,12 @@
 		<put-attribute name="body" type="template"
 			value="/WEB-INF/views/tiles/pages/private/availability.jsp" />
 	</definition>
+	
+	<definition name="bulk-load-streets" extends="base-priv-definition">
+		<put-attribute name="title" value="Carga masiva de calles" />
+		<put-attribute name="body" type="template"
+			value="/WEB-INF/views/tiles/pages/private/bulk-load-streets.jsp" />
+	</definition>
 
 
 

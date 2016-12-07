@@ -59,6 +59,8 @@
 		<input type="hidden" id="street-id" />
 		<br /> <input type="submit" value="Actualizar" />
 	</form>
+	<br/>
+	<a href="<c:url value="/bo/bulk-load-streets" />" >Carga masiva de calles</a>
 </div>
 
 <script async defer
