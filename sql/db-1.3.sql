@@ -1,10 +1,13 @@
+DROP DATABASE IF EXISTS `map_fdm`;
+DROP DATABASE IF EXISTS `map_tmp`;
+DROP DATABASE IF EXISTS `map_vw`;
 CREATE DATABASE `map_fdm` /*!40100 DEFAULT CHARACTER SET latin1 */;
 CREATE DATABASE `map_tmp` /*!40100 DEFAULT CHARACTER SET latin1 */;
 CREATE DATABASE `map_vw` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
 -- ------------------------------------------------------------------
 
-CREATE USER 'mapuser'@'%' IDENTIFIED BY 'zaq1xsw2';
+CREATE USER IF NOT EXISTS 'mapuser'@'%' IDENTIFIED BY 'zaq1xsw2';
 GRANT USAGE ON *.* TO 'mapuser'@'%';
 GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON `map_fdm`.* TO 'mapuser'@'%';
 GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON `map_tmp`.* TO 'mapuser'@'%';
@@ -15,9 +18,9 @@ GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON `map_vw`.* TO 'mapuser'@'%';
 -- intersections
 DROP TABLE IF EXISTS `map_fdm`.`intersections`;
 CREATE TABLE `map_fdm`.`intersections` (
-  `pk_id` int(11) NOT NULL AUTO_INCREMENT,
-  `decimal_latitude` decimal(10,6) NOT NULL,
-  `decimal_longitude` decimal(10,6) NOT NULL,  
+  `pk_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `decimal_latitude` decimal(10,7) NOT NULL,
+  `decimal_longitude` decimal(10,7) NOT NULL,  
   `float_northing` float(16,6) NOT NULL,
   `float_easting` float(16,6) NOT NULL,
   `int_longitude_zone` tinyint,
@@ -28,7 +31,7 @@ CREATE TABLE `map_fdm`.`intersections` (
 -- street types ("línea blanca", "zona azul", "zona verde")
 DROP TABLE IF EXISTS `map_fdm`.`street_types`;
 CREATE TABLE `map_fdm`.`street_types` (
-  `pk_id` int(11) NOT NULL AUTO_INCREMENT,
+  `pk_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `str_description` varchar(255) NOT NULL,
   `bl_free_parking_ind` tinyint(1),  
   PRIMARY KEY (`pk_id`)
@@ -37,7 +40,7 @@ CREATE TABLE `map_fdm`.`street_types` (
 -- street types ("línea blanca", "zona azul", "zona verde")
 DROP TABLE IF EXISTS `map_fdm`.`named_streets`;
 CREATE TABLE `map_fdm`.`named_streets` (
-  `pk_id` int(11) NOT NULL AUTO_INCREMENT,
+  `pk_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `str_name` varchar(255) NOT NULL,
   `str_reference` varchar(255),  
   PRIMARY KEY (`pk_id`)
@@ -46,11 +49,11 @@ CREATE TABLE `map_fdm`.`named_streets` (
 -- store the map of streets
 DROP TABLE IF EXISTS `map_fdm`.`geo_streets`;
 CREATE TABLE `map_fdm`.`geo_streets` (
-  `pk_id` int(11) NOT NULL AUTO_INCREMENT, 
-  `fk_named_street_id` int(11),
-  `fk_street_type_id` int(11),
-  `fk_intersection_from_id` int(11) NOT NULL,  
-  `fk_intersection_to_id` int(11) NOT NULL,
+  `pk_id` bigint(20) NOT NULL AUTO_INCREMENT, 
+  `fk_named_street_id` bigint(20),
+  `fk_street_type_id` bigint(20),
+  `fk_intersection_from_id` bigint(20) NOT NULL,  
+  `fk_intersection_to_id` bigint(20) NOT NULL,
 
   `bl_oneway_ind` tinyint(1) DEFAULT 0,
   `int_lanes` tinyint(1) DEFAULT 0,
@@ -59,10 +62,10 @@ CREATE TABLE `map_fdm`.`geo_streets` (
   `routable` tinyint(1) DEFAULT 0, 
   `int_parking_capacity` smallint,
     
-  `float_line_coeff_a` float(16,6) NOT NULL,
-  `float_line_coeff_b` float(16,6) NOT NULL,
-  `float_line_coeff_c` float(16,6) NOT NULL,
-  `float_line_sqrt_a2_b2` float(16,6) NOT NULL,
+  `float_line_coeff_a` float(16,6),
+  `float_line_coeff_b` float(16,6),
+  `float_line_coeff_c` float(16,6),
+  `float_line_sqrt_a2_b2` float(16,6),
   
   `float_least_easting` float(16,6),
   `float_greatest_easting` float(16,6),
@@ -88,15 +91,15 @@ CREATE INDEX status ON `map_fdm`.`geo_streets` (int_status);
 -- parking spots reported by users
 DROP TABLE IF EXISTS `map_fdm`.`spots`;
 CREATE TABLE `map_fdm`.`spots` (
-  `pk_id` int(11) NOT NULL AUTO_INCREMENT,
-  `decimal_latitude` decimal(10,6) NOT NULL,
-  `decimal_longitude` decimal(10,6) NOT NULL,
+  `pk_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `decimal_latitude` decimal(10,7) NOT NULL,
+  `decimal_longitude` decimal(10,7) NOT NULL,
   `float_northing` float(16,6) NOT NULL,
   `float_easting` float(16,6) NOT NULL,
   `int_longitude_zone` tinyint,
   `char_latitude_zone` char(1),
   `str_mac` varchar(45) DEFAULT NULL,
-  `fk_geo_street_id` INT(11),
+  `fk_geo_street_id` bigint(20),
   `int_status` tinyint(4) DEFAULT NULL,
   `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -112,41 +115,157 @@ CREATE INDEX loc ON `map_fdm`.`spots` (decimal_latitude,decimal_longitude,str_ma
 -- ------------------------------------------------------------------
 -- Pre compute calculations on geo_street new or updated record
 
-DROP PROCEDURE IF EXISTS `map_fdm`.`calc_l_g_m`;
-DELIMITER $$
-CREATE PROCEDURE `map_fdm`.`calc_l_g_m` 
-(IN in_pk_id INT(11))
-BEGIN
-UPDATE `map_fdm`.`geo_streets` geo, `map_fdm`.`intersections` inter_from, `map_fdm`.`intersections` inter_to
-SET
-  float_least_easting = least(inter_from.float_easting, inter_to.float_easting),
-  float_greatest_easting = greatest(inter_from.float_easting, inter_to.float_easting),
-  float_mid_easting = (inter_from.float_easting + inter_to.float_easting)/2,
-  float_least_northing = least(inter_from.float_northing, inter_to.float_northing),
-  float_greatest_northing = greatest(inter_from.float_northing, inter_to.float_northing),
-  float_mid_northing = (inter_from.float_northing + inter_to.float_northing)/2
-WHERE
-  geo.fk_intersection_from_id = inter_from.pk_id
-  AND geo.fk_intersection_to_id = inter_to.pk_id
-  AND geo.pk_id = in_pk_id ;
-END $$
-DELIMITER ;
-
 DROP TRIGGER IF EXISTS `map_fdm`.`insert_calc_l_g_m`;
 DELIMITER $$
-CREATE TRIGGER `map_fdm`.`insert_calc_l_g_m` AFTER INSERT ON `map_fdm`.`geo_streets`
+CREATE TRIGGER `map_fdm`.`insert_calc_l_g_m` BEFORE INSERT ON `map_fdm`.`geo_streets`
 FOR EACH ROW
 BEGIN
-CALL `map_fdm`.`calc_l_g_m`(new.`pk_id`);
+SET
+  new.float_least_easting = (select least(inter_from.float_easting, inter_to.float_easting) 
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_greatest_easting = (select greatest(inter_from.float_easting, inter_to.float_easting) 
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_mid_easting = (select (inter_from.float_easting + inter_to.float_easting) / 2
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_least_northing = (select least(inter_from.float_northing, inter_to.float_northing) 
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_greatest_northing = (select greatest(inter_from.float_northing, inter_to.float_northing) 
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_mid_northing = (select (inter_from.float_northing + inter_to.float_northing) / 2
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_line_coeff_a = ( select case
+                                      when i_from.float_easting = i_to.float_easting then 1
+                                      when i_from.float_northing = i_to.float_northing then 0
+                                      else (i_to.float_northing - i_from.float_northing) / (i_to.float_easting - i_from.float_easting)
+                                    end as coeff_a
+                             from `map_fdm`.`intersections` i_from, 
+                                  `map_fdm`.`intersections` i_to
+                             where
+                               new.fk_intersection_from_id = i_from.pk_id
+                               and new.fk_intersection_to_id = i_to.pk_id),
+  new.float_line_coeff_b = ( select case
+                                      when i_from.float_easting = i_to.float_easting then 0
+                                      when i_from.float_northing = i_to.float_northing then 1
+                                      else -1
+                                    end as coeff_b
+                             from `map_fdm`.`intersections` i_from, 
+                                  `map_fdm`.`intersections` i_to
+                             where
+                               new.fk_intersection_from_id = i_from.pk_id
+                               and new.fk_intersection_to_id = i_to.pk_id),
+  new.float_line_coeff_c = ( select case
+                                      when i_from.float_easting = i_to.float_easting then -i_from.float_easting
+                                      when i_from.float_northing = i_to.float_northing then -i_from.float_northing
+                                      else i_from.float_northing - i_from.float_easting * (i_to.float_northing - i_from.float_northing) / (i_to.float_easting - i_from.float_easting)
+                                    end as coeff_c
+                             from `map_fdm`.`intersections` i_from, 
+                                  `map_fdm`.`intersections` i_to
+                             where
+                               new.fk_intersection_from_id = i_from.pk_id
+                               and new.fk_intersection_to_id = i_to.pk_id),
+  new.float_line_sqrt_a2_b2 = sqrt(new.float_line_coeff_a*new.float_line_coeff_a + new.float_line_coeff_b*new.float_line_coeff_b)
+;
 END $$
 DELIMITER ;
 
 DROP TRIGGER IF EXISTS `map_fdm`.`update_calc_l_g_m`;
 DELIMITER $$
-CREATE TRIGGER `map_fdm`.`update_calc_l_g_m` AFTER UPDATE ON `map_fdm`.`geo_streets`
+CREATE TRIGGER `map_fdm`.`update_calc_l_g_m` BEFORE UPDATE ON `map_fdm`.`geo_streets`
 FOR EACH ROW
 BEGIN
-CALL `map_fdm`.`calc_l_g_m`(new.`pk_id`);
+SET
+  new.float_least_easting = (select least(inter_from.float_easting, inter_to.float_easting) 
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_greatest_easting = (select greatest(inter_from.float_easting, inter_to.float_easting) 
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_mid_easting = (select (inter_from.float_easting + inter_to.float_easting) / 2
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_least_northing = (select least(inter_from.float_northing, inter_to.float_northing) 
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_greatest_northing = (select greatest(inter_from.float_northing, inter_to.float_northing) 
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_mid_northing = (select (inter_from.float_northing + inter_to.float_northing) / 2
+                             from `map_fdm`.`intersections` inter_from, 
+                                  `map_fdm`.`intersections` inter_to
+                             where
+                               new.fk_intersection_from_id = inter_from.pk_id
+                               and new.fk_intersection_to_id = inter_to.pk_id),
+  new.float_line_coeff_a = ( select case
+                                      when i_from.float_easting = i_to.float_easting then 1
+                                      when i_from.float_northing = i_to.float_northing then 0
+                                      else (i_to.float_northing - i_from.float_northing) / (i_to.float_easting - i_from.float_easting)
+                                    end as coeff_a
+                             from `map_fdm`.`intersections` i_from, 
+                                  `map_fdm`.`intersections` i_to
+                             where
+                               new.fk_intersection_from_id = i_from.pk_id
+                               and new.fk_intersection_to_id = i_to.pk_id),
+  new.float_line_coeff_b = ( select case
+                                      when i_from.float_easting = i_to.float_easting then 0
+                                      when i_from.float_northing = i_to.float_northing then 1
+                                      else -1
+                                    end as coeff_b
+                             from `map_fdm`.`intersections` i_from, 
+                                  `map_fdm`.`intersections` i_to
+                             where
+                               new.fk_intersection_from_id = i_from.pk_id
+                               and new.fk_intersection_to_id = i_to.pk_id),
+  new.float_line_coeff_c = ( select case
+                                      when i_from.float_easting = i_to.float_easting then -i_from.float_easting
+                                      when i_from.float_northing = i_to.float_northing then -i_from.float_northing
+                                      else i_from.float_northing - i_from.float_easting * (i_to.float_northing - i_from.float_northing) / (i_to.float_easting - i_from.float_easting)
+                                    end as coeff_c
+                             from `map_fdm`.`intersections` i_from, 
+                                  `map_fdm`.`intersections` i_to
+                             where
+                               new.fk_intersection_from_id = i_from.pk_id
+                               and new.fk_intersection_to_id = i_to.pk_id),
+  new.float_line_sqrt_a2_b2 = sqrt(new.float_line_coeff_a*new.float_line_coeff_a + new.float_line_coeff_b*new.float_line_coeff_b)
+;
 END $$
 DELIMITER ;
 
