@@ -10,7 +10,7 @@ public interface StreetDAOInterface {
 
 	public void delete(StreetInterface street);
 
-	public StreetInterface getStreet(int id);
+	public StreetInterface getStreet(long id);
 
 	public List<? extends StreetInterface> findAll();
 

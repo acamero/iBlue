@@ -40,10 +40,13 @@ public class SpotReaderMQ {
 					System.out.println("SPOT: " + spot.toString());
 
 					SpotDAOInterface spotDAO = new SpotDAO();
-					if (spot.getStatus() == 0) {
+					if (spot.getStatus() == 1) {
+						SpotInterface tmp = spotDAO.persist(spot);
+						System.out.println("Spot created (id=" + tmp.getId() + ")");
+					} else {
 						Spot tmp = (Spot)spotDAO.getSpot(spot);
 						if (tmp != null) {
-							tmp.setStatus(0);
+							tmp.setStatus(spot.getStatus());
 							tmp = (Spot)spotDAO.update(tmp);
 							if (tmp != null) {
 								System.out.println("Spot updated (id=" + tmp.getId() + ")");
@@ -53,10 +56,6 @@ public class SpotReaderMQ {
 						} else {
 							System.out.println("Could not find the spot");
 						}
-					} else {
-						SpotInterface tmp = spotDAO.persist(spot);
-						System.out.println("Spot created (id=" + tmp.getId() + ")");
-
 					}
 				}
 			};

@@ -5,8 +5,8 @@
 <hibernate-configuration>
 	<session-factory>
 
-		<property name="connection.url">jdbc:mysql://localhost:3306/iblue_fdm</property>
-		<property name="connection.username">iblueuser</property>
+		<property name="connection.url">jdbc:mysql://localhost:3306/map_fdm</property>
+		<property name="connection.username">mapuser</property>
 		<property name="connection.password">zaq1xsw2</property>
 		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
@@ -23,11 +23,13 @@
 		<property name="c3p0.max_statements">50</property>
 		<!-- no "connection.pool_size" entry! -->
 		<!-- <property name="connection.pool_size">5</property> <property name="current_session_context_class">thread</property> -->
-		
+
+
+		<mapping class="com.iblue.model.db.GeoStreet" />
+		<mapping class="com.iblue.model.db.Intersection" />
+		<mapping class="com.iblue.model.db.NamedStreet" />
 		<mapping class="com.iblue.model.db.Spot" />
-		<mapping class="com.iblue.model.db.Street" />
-
-
+		<mapping class="com.iblue.model.db.StreetType" />
 
 	</session-factory>
 </hibernate-configuration>

@@ -2,96 +2,98 @@ package com.iblue.model.db;
 
 import java.util.List;
 
-import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 import com.iblue.model.StreetDAOInterface;
 import com.iblue.model.StreetInterface;
 
-public class StreetDAO implements StreetDAOInterface {
-
-	private Session session;
-
-	private void open() {
-		session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
+public class StreetDAO extends MasterDAO implements StreetDAOInterface {
+	
+	private StreetTypeDAO std;
+	
+	public StreetDAO() {
+		std = new StreetTypeDAO();
 	}
 
-	private void closeTx() {
-		session.getTransaction().commit();
-		session.close();
-	}
-
-		public Street persist(StreetInterface streetI) {
-		Street street;
+	public GeoStreet persist(StreetInterface streetI) {
+		GeoStreet street;
 
 		try {
-			street = (Street) streetI;
+			street = (GeoStreet) streetI;
 		} catch (Exception e) {
-			street = new Street();
-			street.setCapacity(streetI.getCapacity());
-			street.setLatLong1(streetI.getLatitude1(), streetI.getLongitude1());
-			street.setLatLong2(streetI.getLatitude2(), streetI.getLongitude2());
-			street.setStatus(streetI.getStatus());
-			street.setType(streetI.getType());
+			street = new GeoStreet();
+			street.setFromIntersection(new Intersection(streetI.getLatitude1(),streetI.getLongitude1()));
+			street.setToIntersection(new Intersection(streetI.getLatitude2(),street.getLongitude2()));
+			street.setLanesBackward(streetI.getLanesBackward());
+			street.setLanesForward(streetI.getLanesForward());
+			street.setNumberOfLanes(streetI.getNumberOfLanes());
+			street.setOneway(streetI.isOneway());
+			street.setParkingCapacity(streetI.getParkingCapacity());
+			street.setRoutable(streetI.isRoutable());
+			street.setStatus(streetI.getStatus());			
+			street.setStreetType(std.getStreetType(streetI.getStreetTypeId()));		
 		}
 
-		open();
-		session.save(street);
-		closeTx();
-		
+		saveTx(street);
+
 		return street;
 	}
 
-	
-	public Street update(StreetInterface streetI) {
-		if(streetI==null) {
+	public GeoStreet update(StreetInterface streetI) {
+		if (streetI == null) {
 			return null;
 		}
-		Street street;
+		GeoStreet street;
 
 		try {
-			street = (Street) streetI;
+			street = (GeoStreet) streetI;
 		} catch (Exception e) {
-			street = (Street) getStreet(streetI.getId());
-			if(street==null) {
+			street = (GeoStreet) getStreet(streetI.getId());
+			if (street == null) {
 				return null;
 			}
-			street.setCapacity(streetI.getCapacity());
-			street.setLatLong1(streetI.getLatitude1(), streetI.getLongitude1());
-			street.setLatLong2(streetI.getLatitude2(), streetI.getLongitude2());
-			street.setStatus(streetI.getStatus());
-			street.setType(streetI.getType());
+			Intersection tmp = street.getFromIntersection();
+			tmp.setLatLong(streetI.getLatitude1(), streetI.getLongitude1());
+			street.setFromIntersection(tmp);
+			tmp = street.getToIntersection();
+			tmp.setLatLong(streetI.getLatitude2(), streetI.getLongitude2());
+			street.setToIntersection(tmp);
+			
+			street.setLanesBackward(streetI.getLanesBackward());
+			street.setLanesForward(streetI.getLanesForward());
+			street.setNumberOfLanes(streetI.getNumberOfLanes());
+			street.setOneway(streetI.isOneway());
+			street.setParkingCapacity(streetI.getParkingCapacity());
+			street.setRoutable(streetI.isRoutable());
+			street.setStatus(streetI.getStatus());			
+			street.setStreetType(std.getStreetType(streetI.getStreetTypeId()));
 		}
 
-		open();
-		session.update(street);
-		closeTx();
-		
+		updateTx(street);
+
 		return street;
 	}
 
-	
 	public void delete(StreetInterface streetI) {
-		Street street;
+		GeoStreet street = null;
 
 		try {
-			street = (Street) streetI;
+			street = (GeoStreet) streetI;
 		} catch (Exception e) {
-			street = (Street) getStreet(streetI.getId());
+			street = (GeoStreet) getStreet(streetI.getId());
 		}
-		
-		open();
-		session.delete(street);
-		closeTx();
+
+		if (street != null) {
+			deleteTx(street);
+		}
+
 	}
 
-	
-	public StreetInterface getStreet(int id) {
-		open();
-		Query<Street> query = session.createQuery("from Street where id = :id", Street.class);
+	public StreetInterface getStreet(long id) {
+		openTx();
+		Query<GeoStreet> query = session.createQuery("from GeoStreet where id = :id", GeoStreet.class);
 		query.setParameter("id", id);
-		List<Street> streets = query.getResultList();
+		List<GeoStreet> streets = query.getResultList();
 		closeTx();
 		if (streets.isEmpty()) {
 			return null;
@@ -99,21 +101,19 @@ public class StreetDAO implements StreetDAOInterface {
 		return streets.get(0);
 	}
 
-	
-	public List<Street> findAll() {
-		open();
-		Query<Street> query = session.createQuery("from Street", Street.class);
-		List<Street> streets = query.getResultList();
+	public List<GeoStreet> findAll() {
+		openTx();
+		Query<GeoStreet> query = session.createQuery("from GeoStreet", GeoStreet.class);
+		List<GeoStreet> streets = query.getResultList();
 		closeTx();
 		return streets;
 	}
 
-	
-	public List<Street> findAllActive() {
-		open();
-		Query<Street> query = session.createQuery("from Street where status = :status", Street.class);
+	public List<GeoStreet> findAllActive() {
+		openTx();
+		Query<GeoStreet> query = session.createQuery("from GeoStreet where status = :status", GeoStreet.class);
 		query.setParameter("status", 1);
-		List<Street> streets = query.getResultList();
+		List<GeoStreet> streets = query.getResultList();
 		closeTx();
 		return streets;
 	}

@@ -13,25 +13,21 @@ import javax.persistence.Table;
 import com.iblue.coord.LatLong;
 import com.iblue.coord.ReferenceEllipsoid;
 import com.iblue.coord.UTM;
-import com.iblue.model.SpotInterface;
 
 @Entity
-@Table(name = "spots", schema = DbSchema.DB_SCHEMA)
-public class Spot implements SpotInterface {
-	
-	protected static final int LAT_LON_SCALE = 6;
+@Table(name = "intersections", schema = DbSchema.DB_SCHEMA)
+public class Intersection {
 
+	protected static final int LAT_LON_SCALE = 7;
+	
 	@Id
 	@Column(name = "pk_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-
-	// Latitude and longitude in degrees
 	@Column(name = "decimal_latitude", precision=10, scale=LAT_LON_SCALE)
 	private BigDecimal latitude;
 	@Column(name = "decimal_longitude", precision=10, scale=LAT_LON_SCALE)
 	private BigDecimal longitude;
-
 	// UTM coordinates
 	@Column(name = "float_northing")
 	private float northing;
@@ -41,40 +37,24 @@ public class Spot implements SpotInterface {
 	private int longitudeZone;
 	@Column(name = "char_latitude_zone")
 	private char latitudeZone;
-
-	// Street associated to this parking spot
-	@Column(name = "fk_geo_street_id")
-	private long streetId;
-
-	@Column(name = "str_mac", length = 45)
-	private String mac;
-
-	@Column(name = "int_status", columnDefinition = "TINYINT")
-	private int status;
-
 	@Column(name = "ts_update", insertable = false)
 	private Timestamp updateTs;
 	@Column(name = "ts_create", updatable = false)
 	private Timestamp createTs;
-
-	public Spot() {
+	
+	//@OneToMany(mappedBy = "intersections", cascade = CascadeType.ALL)
+	//private Set<GeoStreet> geoStreets;
+	
+	public Intersection() {
+		
 	}
-
-	private void setUTM() {
-		UTM utm = UTM.latLongToUtm(LatLong.valueOf(latitude.floatValue(), longitude.floatValue(), LatLong.DEGREE_ANGLE),
-				ReferenceEllipsoid.WGS84);
-		northing = (float) utm.northingValue();
-		easting = (float) utm.eastingValue();
-		longitudeZone = utm.longitudeZone();
-		latitudeZone = utm.latitudeZone();
+	
+	public Intersection(BigDecimal latitude, BigDecimal longitude) {
+		setLatLong(latitude,longitude);
 	}
-
-	public BigDecimal getLatitude() {
-		return latitude;
-	}
-
-	public BigDecimal getLongitude() {
-		return longitude;
+	
+	public long getId() {
+		return id;
 	}
 
 	public void setLatLong(BigDecimal latitude, BigDecimal longitude) {
@@ -83,32 +63,21 @@ public class Spot implements SpotInterface {
 		setUTM();
 	}
 
-	public int getStatus() {
-		return status;
+	private void setUTM() {
+		UTM utm = UTM.latLongToUtm(LatLong.valueOf(latitude.doubleValue(), longitude.doubleValue(), LatLong.DEGREE_ANGLE),
+				ReferenceEllipsoid.WGS84);
+		northing = (float) utm.northingValue();
+		easting = (float) utm.eastingValue();
+		longitudeZone = utm.longitudeZone();
+		latitudeZone = utm.latitudeZone();
+	}
+	
+	public BigDecimal getLatitude() {
+		return latitude;
 	}
 
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public String getMac() {
-		return mac;
-	}
-
-	public void setMac(String mac) {
-		this.mac = mac;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public Timestamp getUpdateTs() {
-		return updateTs;
-	}
-
-	public Timestamp getCreateTs() {
-		return createTs;
+	public BigDecimal getLongitude() {
+		return longitude;
 	}
 
 	public float getNorthing() {
@@ -126,19 +95,17 @@ public class Spot implements SpotInterface {
 	public char getLatitudeZone() {
 		return latitudeZone;
 	}
-
-	public long getStreetId() {
-		return streetId;
+	
+	public Timestamp getUpdateTs() {
+		return updateTs;
 	}
 
-	public void setStreetId(long streetId) {
-		this.streetId = streetId;
-	}
-
-	@Override
-	public String toString() {
-		return "{\"latitude\":\"" + getLatitude() + "\",\"longitude\":\"" + getLongitude() + "\",\"mac\":\"" + this.mac
-				+ "\",\"status\":\"" + this.status + "\",\"id\":\"" + this.id + "\"}";
-	}
-
+	public Timestamp getCreateTs() {
+		return createTs;
+	}	
+	
+	//public Set<GeoStreet> getGeoStreets() {
+	//	return geoStreets;
+	//}
+	
 }

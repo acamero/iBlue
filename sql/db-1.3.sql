@@ -25,6 +25,8 @@ CREATE TABLE `map_fdm`.`intersections` (
   `float_easting` float(16,6) NOT NULL,
   `int_longitude_zone` tinyint,
   `char_latitude_zone` char(1),
+  `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`pk_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
@@ -33,7 +35,9 @@ DROP TABLE IF EXISTS `map_fdm`.`street_types`;
 CREATE TABLE `map_fdm`.`street_types` (
   `pk_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `str_description` varchar(255) NOT NULL,
-  `bl_free_parking_ind` tinyint(1),  
+  `bl_free_parking_ind` TINYINT, 
+  `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
   PRIMARY KEY (`pk_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
@@ -42,7 +46,9 @@ DROP TABLE IF EXISTS `map_fdm`.`named_streets`;
 CREATE TABLE `map_fdm`.`named_streets` (
   `pk_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `str_name` varchar(255) NOT NULL,
-  `str_reference` varchar(255),  
+  `str_reference` varchar(255), 
+  `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
   PRIMARY KEY (`pk_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
@@ -55,11 +61,11 @@ CREATE TABLE `map_fdm`.`geo_streets` (
   `fk_intersection_from_id` bigint(20) NOT NULL,  
   `fk_intersection_to_id` bigint(20) NOT NULL,
 
-  `bl_oneway_ind` tinyint(1) DEFAULT 0,
-  `int_lanes` tinyint(1) DEFAULT 0,
-  `int_lanes_forward` tinyint(1) DEFAULT 0,
-  `int_lanes_backward` tinyint(1) DEFAULT 0, 
-  `routable` tinyint(1) DEFAULT 0, 
+  `bl_oneway_ind` TINYINT DEFAULT 0,
+  `int_lanes` TINYINT DEFAULT 0,
+  `int_lanes_forward` TINYINT DEFAULT 0,
+  `int_lanes_backward` TINYINT DEFAULT 0, 
+  `bl_routable_ind` TINYINT DEFAULT 0, 
   `int_parking_capacity` smallint,
     
   `float_line_coeff_a` float(16,6),
@@ -74,7 +80,7 @@ CREATE TABLE `map_fdm`.`geo_streets` (
   `float_mid_easting` float(16,6),
   `float_mid_northing` float(16,6),  
   
-  `int_status` tinyint(1) DEFAULT NULL,
+  `int_status` TINYINT DEFAULT NULL,
   `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`pk_id`),
@@ -325,10 +331,10 @@ DECLARE delta FLOAT(10,6);
 SET delta = 0.05;
 SELECT
   st.pk_id
-  ,nodes_from.decimal_latitude
-  ,nodes_from.decimal_longitude
-  ,nodes_to.decimal_latitude
-  ,nodes_to.decimal_longitude
+  ,nodes_from.decimal_latitude as decimal_latitude_1
+  ,nodes_from.decimal_longitude as decimal_longitude_1
+  ,nodes_to.decimal_latitude as decimal_latitude_2
+  ,nodes_to.decimal_longitude as decimal_longitude_2
   ,coalesce(usp.usage_number,0) as usage_number
   ,st.int_parking_capacity
   ,st.fk_street_type_id
@@ -357,10 +363,10 @@ DECLARE delta FLOAT(10,6);
 SET delta = 0.015;
 SELECT
   st.pk_id
-  ,nodes_from.decimal_latitude
-  ,nodes_from.decimal_longitude
-  ,nodes_to.decimal_latitude
-  ,nodes_to.decimal_longitude
+  ,nodes_from.decimal_latitude as decimal_latitude_1
+  ,nodes_from.decimal_longitude as decimal_longitude_1
+  ,nodes_to.decimal_latitude as decimal_latitude_2
+  ,nodes_to.decimal_longitude as decimal_longitude_2
   ,coalesce(usp.usage_number,0) as usage_number
   ,st.int_parking_capacity
   ,st.fk_street_type_id

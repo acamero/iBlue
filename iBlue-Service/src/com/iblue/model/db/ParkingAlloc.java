@@ -1,5 +1,6 @@
 package com.iblue.model.db;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -23,7 +24,7 @@ public class ParkingAlloc implements ParkingAllocInterface {
 		session.close();
 	}
 
-	public int getNearestStreetId(SpotInterface spotI) {
+	public long getNearestStreetId(SpotInterface spotI) {
 		Spot spot;
 		try {
 			spot = (Spot) spotI;
@@ -33,7 +34,7 @@ public class ParkingAlloc implements ParkingAllocInterface {
 		}
 		open();
 		String queryString = "CALL " + DbSchema.DB_SCHEMA
-				+ ".nearest_street(:latitude, :longitude, :northing, :easting)";
+				+ ".get_nearest_street(:latitude, :longitude, :northing, :easting)";
 		@SuppressWarnings("rawtypes")
 		Query query = session.createNativeQuery(queryString).setParameter("latitude", spot.getLatitude())
 				.setParameter("longitude", spot.getLongitude()).setParameter("northing", spot.getNorthing())
@@ -47,7 +48,8 @@ public class ParkingAlloc implements ParkingAllocInterface {
 		closeTx();
 		if (res != null && res.length >= 2) {
 			System.out.println("Street id=" + res[0].toString() + " distance=" + res[1].toString());
-			return (Integer) res[0];
+			BigInteger id = (BigInteger)res[0];
+			return id.longValue();
 		}
 		// if no street found
 		return 0;
@@ -55,7 +57,7 @@ public class ParkingAlloc implements ParkingAllocInterface {
 
 	public List<StreetAvailability> getNearStreetAvailability(SpotInterface spot) {
 		open();
-		String queryString = "CALL " + DbSchema.DB_SCHEMA + ".area_map(:latitude, :longitude)";
+		String queryString = "CALL " + DbSchema.DB_SCHEMA + ".get_near_area_map(:latitude, :longitude)";
 		@SuppressWarnings("rawtypes")
 		Query query = session.createNativeQuery(queryString, "AreaMapResultSet")
 				.setParameter("latitude", spot.getLatitude()).setParameter("longitude", spot.getLongitude());
@@ -67,7 +69,7 @@ public class ParkingAlloc implements ParkingAllocInterface {
 	
 	public StreetAvailabilityInterface parkMeClosest(SpotInterface spot) {
 		open();
-		String queryString = "CALL " + DbSchema.DB_SCHEMA + ".closest_parking(:latitude, :longitude)";
+		String queryString = "CALL " + DbSchema.DB_SCHEMA + ".get_closest_parking(:latitude, :longitude)";
 		@SuppressWarnings("rawtypes")
 		Query query = session.createNativeQuery(queryString, "AreaMapResultSet")
 				.setParameter("latitude", spot.getLatitude()).setParameter("longitude", spot.getLongitude());

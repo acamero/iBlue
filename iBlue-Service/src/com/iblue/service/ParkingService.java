@@ -21,7 +21,7 @@ public class ParkingService {
 	@GET
 	@Path("/closest/{latitude}/{longitude}")
 	@Produces("application/json")
-	public Response getActiveStreets(@PathParam("latitude") float latitude, @PathParam("longitude") float longitude)
+	public Response closestParking(@PathParam("latitude") float latitude, @PathParam("longitude") float longitude)
 			throws JSONException {
 		System.out.println("Parking closest to lat=" + latitude + " lon=" + longitude);
 
@@ -35,4 +35,6 @@ public class ParkingService {
 			return Response.status(200).entity("No street available in the neighborhood").build();
 		}
 	}
+	
+	
 }

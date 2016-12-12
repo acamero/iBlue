@@ -11,7 +11,7 @@ public interface SpotDAOInterface {
 	
 	public void delete(SpotInterface spot);
 	
-	public SpotInterface getSpot(int id);
+	public SpotInterface getSpot(long id);
 	
 	public SpotInterface getSpot(SpotInterface spot);
 	

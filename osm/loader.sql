@@ -34,11 +34,11 @@ CREATE TABLE `map_tmp`.`geo_streets` (
   way_id bigint,
   node_id_from bigint,
   node_id_to bigint,
-  one_way_ind tinyint(1),
-  no_lanes tinyint(1),
-  lanes_backward tinyint(1),
-  lanes_forward tinyint(1),
-  routable tinyint(1)
+  one_way_ind TINYINT,
+  no_lanes TINYINT,
+  lanes_backward TINYINT,
+  lanes_forward TINYINT,
+  bl_routable_ind TINYINT
 );
 
 LOAD DATA LOCAL INFILE 'tmp/geo.csv' INTO TABLE `map_tmp`.`geo_streets`
@@ -86,7 +86,7 @@ insert into `map_fdm`.`geo_streets` (
   int_lanes, 
   int_lanes_forward, 
   int_lanes_backward, 
-  routable, 
+  bl_routable_ind, 
   int_parking_capacity, 
   int_status)
 select 
@@ -98,7 +98,7 @@ select
   tmp.no_lanes, 
   tmp.lanes_forward, 
   tmp.lanes_backward,  
-  tmp.routable,
+  tmp.bl_routable_ind,
   0,
   1
 from `map_tmp`.`geo_streets` tmp

@@ -58,8 +58,8 @@ function initMarkers(map, position) {
 			// console.log(jsonData[i] + " " + i);
 			var obj = JSON.parse(jsonData[i]);
 			addMarker(map, obj["id"], obj["latitude1"], obj["longitude1"],
-					obj["latitude2"], obj["longitude2"], obj["inUseSpots"],
-					obj["capacity"], obj["type"]);
+					obj["latitude2"], obj["longitude2"], obj["usageNumber"],
+					obj["parkingCapacity"], obj["streetTypeId"]);
 		}
 	})
 }

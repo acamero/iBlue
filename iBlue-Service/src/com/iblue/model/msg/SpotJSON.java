@@ -11,7 +11,7 @@ public class SpotJSON implements SpotInterface, AuthMsgInterface {
 	private BigDecimal latitude;
 	private BigDecimal longitude;
 	private String mac;
-	private int id;
+	private long id;
 	private int status;
 	private String token;
 
@@ -54,11 +54,11 @@ public class SpotJSON implements SpotInterface, AuthMsgInterface {
 	}
 
 	@Override
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

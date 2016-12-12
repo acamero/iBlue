@@ -13,12 +13,17 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 	private BigDecimal latitude2;
 	private BigDecimal longitude2;
 	private int status;
-	private int capacity;
-	private int type;
-	private int id;
+	private boolean routable;	
+	private int parkingCapacity;	
+	private long streetTypeId;
+	private long id;
+	private boolean oneway;
+	private int numberOfLanes;
+	private int lanesForward;
+	private int lanesBackward;
 	private String token;
 	private String userId;
-
+	
 	public StreetJSON() {
 	}
 
@@ -29,8 +34,52 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 		this.latitude2 = latitude2;
 		this.longitude2 = longitude2;
 		this.status = status;
-		this.capacity = capacity;
-		this.type = type;
+		this.parkingCapacity = capacity;
+		this.streetTypeId = type;
+	}
+	
+	public boolean isRoutable() {
+		return routable;
+	}
+
+	public void setRoutable(boolean routable) {
+		this.routable = routable;
+	}
+
+	public boolean isOneway() {
+		return oneway;
+	}
+
+	public void setOneway(boolean oneway) {
+		this.oneway = oneway;
+	}
+
+	public int getNumberOfLanes() {
+		return numberOfLanes;
+	}
+
+	public void setNumberOfLanes(int numberOfLanes) {
+		this.numberOfLanes = numberOfLanes;
+	}
+
+	public int getLanesForward() {
+		return lanesForward;
+	}
+
+	public void setLanesForward(int lanesForward) {
+		this.lanesForward = lanesForward;
+	}
+
+	public int getLanesBackward() {
+		return lanesBackward;
+	}
+
+	public void setLanesBackward(int lanesBackward) {
+		this.lanesBackward = lanesBackward;
+	}
+
+	public void setParkingCapacity(int parkingCapacity) {
+		this.parkingCapacity = parkingCapacity;
 	}
 
 	public BigDecimal getLatitude1() {
@@ -73,19 +122,19 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 		this.status = status;
 	}
 
-	public int getCapacity() {
-		return capacity;
+	public int getParkingCapacity() {
+		return parkingCapacity;
 	}
 
 	public void setCapacity(int capacity) {
-		this.capacity = capacity;
+		this.parkingCapacity = capacity;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -97,13 +146,6 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 	public void setLatLong2(BigDecimal latitude2, BigDecimal longitude2) {
 		this.latitude2 = latitude2;
 		this.longitude2 = longitude2;
-	}
-
-	public String toString() {
-		return "{" + "\"latitude1\":\"" + latitude1 + "\"," + "\"longitude1\":\"" + longitude1 + "\","
-				+ "\"latitude2\":\"" + latitude2 + "\"," + "\"longitude2\":\"" + longitude2 + "\"," + "\"status\":\""
-				+ status + "\"," + "\"capacity\":\"" + capacity + "\"," 
-				+ "\"type\":\"" + type +"\"," +"\"id\":\"" + id + "\"" + "}";
 	}
 
 	public String getToken() {
@@ -122,11 +164,31 @@ public class StreetJSON implements StreetInterface, AuthMsgInterface {
 		this.userId = userId;
 	}
 	
-	public int getType() {
-		return type;
+	public long getStreetTypeId() {
+		return streetTypeId;
 	}
 	
-	public void setType(int type) {
-		this.type = type;
+	public void setStreetTypeId(long type) {
+		this.streetTypeId = type;
+	}
+	
+	public String toString() {
+		return "{" + 
+				"\"id\":\"" + id + "\"," +
+				"\"latitude1\":\"" + latitude1 + "\"," + 
+				"\"longitude1\":\"" + longitude1 + "\"," + 
+				"\"latitude2\":\"" + latitude2 + "\"," + 
+				"\"longitude2\":\"" + longitude2 + "\"," +
+				"\"status\":\"" + status + "\"," +
+				"\"routable\":\"" + routable + "\"," +
+				"\"parkingCapacity\":\"" + parkingCapacity + "\"," +
+				"\"streetTypeId\":\"" + streetTypeId + "\"," +				
+				"\"oneway\":\"" + oneway + "\"," +
+				"\"numerOfLanes\":\"" + numberOfLanes + "\"," +
+				"\"lanesForward\":\"" + lanesForward + "\"," +
+				"\"lanesBackward\":\"" + lanesBackward + "\"," +
+				"\"token\":\"" + token + "\"," +
+				"\"userId\":\"" + userId + "\"" +
+				"}";
 	}
 }

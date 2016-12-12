@@ -5,28 +5,17 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 import com.iblue.model.SpotDAOInterface;
 import com.iblue.model.SpotInterface;
 
-public class SpotDAO implements SpotDAOInterface {
+public class SpotDAO extends MasterDAO  implements SpotDAOInterface {
 
-	private Session session;
+	
 
 	public SpotDAO() {
 
-	}
-
-	private void open() {
-		session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
-	}
-
-	private void closeTx() {
-		session.getTransaction().commit();
-		session.close();
 	}
 
 	public Spot persist(SpotInterface spotI) {
@@ -45,10 +34,8 @@ public class SpotDAO implements SpotDAOInterface {
 
 		associateToStreet(spot);
 
-		open();
-		session.save(spot);
-		closeTx();
-
+		saveTx(spot);
+		
 		return spot;
 	}
 
@@ -84,10 +71,8 @@ public class SpotDAO implements SpotDAOInterface {
 			associateToStreet(spot);
 		}
 
-		open();
-		session.update(spot);
-		closeTx();
-
+		updateTx(spot);
+		
 		return spot;
 	}
 
@@ -109,13 +94,11 @@ public class SpotDAO implements SpotDAOInterface {
 			}
 		}
 
-		open();
-		session.delete(spot);
-		closeTx();
+		deleteTx(spot);
 	}
 
-	public Spot getSpot(int id) {
-		open();
+	public Spot getSpot(long id) {
+		openTx();
 		Query<Spot> query = session.createQuery("from Spot where id = :id", Spot.class);
 		query.setParameter("id", id);
 		List<Spot> spots = query.getResultList();
@@ -127,7 +110,7 @@ public class SpotDAO implements SpotDAOInterface {
 	}
 
 	public Spot getSpot(SpotInterface spotI) {
-		open();
+		openTx();
 		Query<Spot> query = session.createQuery(
 				"from Spot where latitude = :lat and longitude = :lon and status = 1 and mac = :mac", Spot.class);
 		query.setParameter("lat", spotI.getLatitude().setScale(Spot.LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN));
@@ -142,7 +125,7 @@ public class SpotDAO implements SpotDAOInterface {
 	}
 
 	public List<Spot> findAll() {
-		open();
+		openTx();
 		Query<Spot> query = session.createQuery("from Spot", Spot.class);
 		List<Spot> spots = query.getResultList();
 		closeTx();
@@ -150,7 +133,7 @@ public class SpotDAO implements SpotDAOInterface {
 	}
 
 	public List<Spot> findAllActive() {
-		open();
+		openTx();
 		Query<Spot> query = session.createQuery("from Spot where status = :status", Spot.class);
 		query.setParameter("status", 1);
 		List<Spot> spots = query.getResultList();
@@ -159,7 +142,7 @@ public class SpotDAO implements SpotDAOInterface {
 	}
 
 	public List<Spot> findAllActive(long fromTime) {
-		open();
+		openTx();
 		Query<Spot> query = session.createQuery("from Spot where status = :status and updateTs >= :ts", Spot.class);
 		query.setParameter("status", 1);
 		query.setParameter("ts", new Date(fromTime));
@@ -169,7 +152,7 @@ public class SpotDAO implements SpotDAOInterface {
 	}
 
 	public List<Spot> findAllRelease(long fromTime) {
-		open();
+		openTx();
 		Query<Spot> query = session.createQuery("from Spot where status < :status and updateTs >= :ts", Spot.class);
 		query.setParameter("status", 1);
 		query.setParameter("ts", new Timestamp(fromTime));

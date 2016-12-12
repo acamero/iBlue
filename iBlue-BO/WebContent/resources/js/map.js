@@ -77,8 +77,8 @@ function initMarkers(map, position) {
 			// console.log(jsonData[i] + " " + i);
 			var obj = JSON.parse(jsonData[i]);
 			addMarker(map, obj["id"], obj["latitude1"], obj["longitude1"],
-					obj["latitude2"], obj["longitude2"], obj["capacity"],
-					obj["type"]);
+					obj["latitude2"], obj["longitude2"], obj["parkingCapacity"],
+					obj["streetTypeId"]);
 		}
 	})
 }
@@ -117,8 +117,8 @@ function updateStreet() {
 		var json = "{" + "\"latitude1\":\"" + fromLat + "\","
 				+ "\"longitude1\":\"" + fromLon + "\"," + "\"latitude2\":\""
 				+ toLat + "\"," + "\"longitude2\":\"" + toLon + "\","
-				+ "\"status\":\"" + status + "\"," + "\"capacity\":\"" + cap
-				+ "\"," + "\"type\":\"" + type + "\"," + "\"id\":\"" + id
+				+ "\"status\":\"" + status + "\"," + "\"parkingCapacity\":\"" + cap
+				+ "\"," + "\"streetTypeId\":\"" + type + "\"," + "\"id\":\"" + id
 				+ "\"" + "}";
 		 console.log(json);
 		dbClient.postJson(SERVICE_CONTEXT + "/street/set", json, function(
