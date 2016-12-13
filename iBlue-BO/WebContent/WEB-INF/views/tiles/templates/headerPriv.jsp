@@ -26,3 +26,7 @@
 <div id="availability-header-bullet" class="header-bullet">
 	<a href="<c:url value="/bo/availability" />">Disponibilidad</a>
 </div>
+
+<div id="route-header-bullet" class="header-bullet">
+	<a href="<c:url value="/bo/route" />">Ruta</a>
+</div>

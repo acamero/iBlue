@@ -13,10 +13,11 @@ import javax.persistence.Table;
 import com.iblue.coord.LatLong;
 import com.iblue.coord.ReferenceEllipsoid;
 import com.iblue.coord.UTM;
+import com.iblue.path.VertexInterface;
 
 @Entity
 @Table(name = "intersections", schema = DbSchema.DB_SCHEMA)
-public class Intersection {
+public class Intersection implements VertexInterface {
 
 	protected static final int LAT_LON_SCALE = 7;
 	

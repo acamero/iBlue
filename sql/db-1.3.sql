@@ -118,6 +118,33 @@ CREATE INDEX ts_create ON `map_fdm`.`spots` (ts_create);
 CREATE INDEX fk_id ON `map_fdm`.`spots` (fk_geo_street_id);
 CREATE INDEX loc ON `map_fdm`.`spots` (decimal_latitude,decimal_longitude,str_mac);
 
+-- user defined weights for geo_streets
+DROP TABLE IF EXISTS `map_fdm`.`weight_types`;
+CREATE TABLE `map_fdm`.`weight_types` (
+  `pk_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `str_description` varchar(255) NOT NULL,
+  `str_name` varchar(50) NOT NULL,  
+  `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`pk_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+-- parking spots reported by users
+DROP TABLE IF EXISTS `map_fdm`.`geo_street_weights`;
+CREATE TABLE `map_fdm`.`geo_street_weights` (
+  `pk_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `fk_weight_type_id` bigint(20),
+  `fk_geo_street_id` bigint(20),
+  `float_weight` float(16,6) DEFAULT NULL,
+  `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`pk_id`),
+  FOREIGN KEY fk_geo_street (`fk_geo_street_id`) REFERENCES `map_fdm`.`geo_streets` (`pk_id`),
+  FOREIGN KEY fk_weight_type (`fk_weight_type_id`) REFERENCES `map_fdm`.`weight_types` (`pk_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+
+
 -- ------------------------------------------------------------------
 -- Pre compute calculations on geo_street new or updated record
 
@@ -287,6 +314,36 @@ WHERE
 GROUP BY sp.fk_geo_street_id;
 
 
+DROP VIEW IF EXISTS `map_fdm`.`vw_geo_streets_weighted`;
+CREATE VIEW `map_fdm`.`vw_geo_streets_weighted` AS
+SELECT 
+  st.pk_id as street_id,
+  st.fk_intersection_from_id,
+  st.fk_intersection_to_id,
+  st.bl_oneway_ind,
+  st.int_lanes,
+  st.int_lanes_backward,
+  st.int_lanes_forward,
+  w.pk_id as weight_id,
+  w.fk_weight_type_id,
+  w.float_weight,
+  ifr.decimal_latitude as from_lat,
+  ifr.decimal_longitude as from_lon,
+  ito.decimal_latitude as to_lat,
+  ito.decimal_longitude as to_lon
+FROM  `map_fdm`.`geo_streets` st 
+  JOIN `map_fdm`.`geo_street_weights` w
+    ON st.pk_id = w.fk_geo_street_id
+  JOIN `map_fdm`.`intersections` ifr
+    ON st.fk_intersection_from_id = ifr.pk_id
+  JOIN `map_fdm`.`intersections` ito
+    ON st.fk_intersection_to_id = ito.pk_id
+WHERE
+  st.bl_routable_ind = 1
+  AND st.int_status = 1
+;
+
+
 -- ------------------------------------------------------------------
 
 -- 0.0015 ~ 150 m 
@@ -389,4 +446,12 @@ ORDER BY approx_distance ASC
 LIMIT 1 ;
 END $$
 DELIMITER ;
+
+
+
+
+   
+
+
+
 

@@ -30,6 +30,7 @@
 		<mapping class="com.iblue.model.db.NamedStreet" />
 		<mapping class="com.iblue.model.db.Spot" />
 		<mapping class="com.iblue.model.db.StreetType" />
+		<mapping class="com.iblue.model.db.WeightedStreet" />
 
 	</session-factory>
 </hibernate-configuration>

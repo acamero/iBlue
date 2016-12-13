@@ -12,7 +12,7 @@ public interface StreetInterface {
 	public BigDecimal getLongitude2();	
 
 	public int getStatus();
-	public boolean isRoutable(); 	// may be used for routing?
+	public boolean isRoutable(); 	
 	public int getParkingCapacity();	
 	public long getStreetTypeId();
 	public boolean isOneway();
