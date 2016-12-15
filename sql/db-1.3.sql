@@ -318,12 +318,14 @@ DROP VIEW IF EXISTS `map_fdm`.`vw_geo_streets_weighted`;
 CREATE VIEW `map_fdm`.`vw_geo_streets_weighted` AS
 SELECT 
   st.pk_id as street_id,
+  st.fk_street_type_id,
+  st.int_parking_capacity,
   st.fk_intersection_from_id,
-  st.fk_intersection_to_id,
+  st.fk_intersection_to_id,  
   st.bl_oneway_ind,
   st.int_lanes,
-  st.int_lanes_backward,
   st.int_lanes_forward,
+  st.int_lanes_backward,
   w.pk_id as weight_id,
   w.fk_weight_type_id,
   w.float_weight,
@@ -341,8 +343,38 @@ FROM  `map_fdm`.`geo_streets` st
 WHERE
   st.bl_routable_ind = 1
   AND st.int_status = 1
-;
 
+UNION 
+
+SELECT 
+  st.pk_id as street_id,
+  st.fk_street_type_id,
+  st.int_parking_capacity,
+  st.fk_intersection_to_id as fk_intersection_from_id,
+  st.fk_intersection_from_id as fk_intersection_to_id, 
+  st.bl_oneway_ind,
+  st.int_lanes,
+  st.int_lanes_backward as int_lanes_forward,
+  st.int_lanes_forward as int_lanes_backward,  
+  w.pk_id as weight_id,
+  w.fk_weight_type_id,
+  w.float_weight,  
+  ito.decimal_latitude as from_lat,
+  ito.decimal_longitude as from_lon,
+  ifr.decimal_latitude as to_lat,
+  ifr.decimal_longitude as to_lon
+FROM  `map_fdm`.`geo_streets` st 
+  JOIN `map_fdm`.`geo_street_weights` w
+    ON st.pk_id = w.fk_geo_street_id
+  JOIN `map_fdm`.`intersections` ifr
+    ON st.fk_intersection_from_id = ifr.pk_id
+  JOIN `map_fdm`.`intersections` ito
+    ON st.fk_intersection_to_id = ito.pk_id
+WHERE
+  st.bl_routable_ind = 1
+  AND st.int_status = 1
+  AND st.bl_oneway_ind = 0
+;
 
 -- ------------------------------------------------------------------
 

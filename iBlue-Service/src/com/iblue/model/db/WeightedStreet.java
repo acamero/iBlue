@@ -26,6 +26,8 @@ public class WeightedStreet implements EdgeInterface, StreetInterface {
 	@Column(name = "street_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
+	@Column(name = "fk_street_type_id")
+	private long streetTypeId;
 	@Column(name = "fk_intersection_from_id")
 	private long intersectionFromId;
 	@Column(name = "fk_intersection_to_id")
@@ -33,6 +35,8 @@ public class WeightedStreet implements EdgeInterface, StreetInterface {
 	@Column(name = "bl_oneway_ind", columnDefinition = "TINYINT")
 	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private boolean oneway;
+	@Column(name = "int_parking_capacity", columnDefinition = "SMALLINT")
+	private int parkingCapacity;
 	@Column(name = "int_lanes", columnDefinition = "TINYINT")
 	private int numberOfLanes;
 	@Column(name = "int_lanes_forward", columnDefinition = "TINYINT")
@@ -153,12 +157,12 @@ public class WeightedStreet implements EdgeInterface, StreetInterface {
 
 	@Override
 	public int getParkingCapacity() {
-		return 0;
+		return parkingCapacity;
 	}
 
 	@Override
 	public long getStreetTypeId() {		
-		return 0;
+		return streetTypeId;
 	}
 
 	public String toString() {

@@ -9,20 +9,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DijkstraAlgorithm {
+public class DijkstraAlgorithm implements AlgorithmInterface {
 
-	private List<? extends EdgeInterface> edges;	
-	private Set<Long> settledNodes;	
+	private List<? extends EdgeInterface> edges;
+	private Set<Long> settledNodes;
 	private Set<Long> unSettledNodes;
 	private Map<Long, Long> predecessors;
 	private Map<Long, Float> distance;
-	
+	private Map<Long, List<EdgeInterface>> neighbors;
 
-	public DijkstraAlgorithm(List<? extends EdgeInterface> edges) {
-		this.edges = new ArrayList<EdgeInterface>(edges);		
+	public DijkstraAlgorithm() {
+		
+	}
+	
+	public void setEdges(List<? extends EdgeInterface> edges) {
+		this.edges = new ArrayList<EdgeInterface>(edges);
+		neighbors = new HashMap<Long, List<EdgeInterface>>();
+		for (EdgeInterface edge : this.edges) {
+			List<EdgeInterface> tmp = neighbors.get(edge.getVertexFromId());
+			if (tmp == null) {
+				tmp = new ArrayList<EdgeInterface>();
+			}
+			tmp.add(edge);
+			neighbors.put(edge.getVertexFromId(), tmp);
+		}
+	}
+	
+	public List<? extends EdgeInterface> getPath(VertexInterface origin, VertexInterface destination) {
+		executeSource(origin);
+		return computePath(destination);
 	}
 
-	public void executeSource(VertexInterface source) {
+	private void executeSource(VertexInterface source) {
+		System.out.println("Get route from: " + source.getId());
+
 		settledNodes = new HashSet<Long>();
 		unSettledNodes = new HashSet<Long>();
 		distance = new HashMap<Long, Float>();
@@ -38,34 +58,38 @@ public class DijkstraAlgorithm {
 	}
 
 	private void findMinimalDistances(Long node) {
-		List<Long> adjacentNodes = getNeighbors(node);
-		for (Long target : adjacentNodes) {
-			if (getShortestDistance(target) > getShortestDistance(node) + getDistance(node, target)) {
-				distance.put(target, getShortestDistance(node) + getDistance(node, target));
-				predecessors.put(target, node);
-				unSettledNodes.add(target);
+		List<EdgeInterface> adjacentNodes = getNeighbors(node);
+		for (EdgeInterface target : adjacentNodes) {
+			if (getShortestDistance(target.getVertexToId()) > getShortestDistance(node) + getDistance(node, target)) {
+				distance.put(target.getVertexToId(), getShortestDistance(node) + getDistance(node, target));
+				predecessors.put(target.getVertexToId(), node);
+				unSettledNodes.add(target.getVertexToId());
 			}
 		}
 
 	}
 
-	private float getDistance(Long node, Long target) {
-		for (EdgeInterface edge : edges) {
-			if (edge.getVertexFromId() == node && edge.getVertexToId() == target) {
-				return edge.getWeight();
-			}
-		}
-		throw new RuntimeException("Should not happen");
+	private float getDistance(Long node, EdgeInterface target) {
+		return target.getWeight();
+		// for (EdgeInterface edge : edges) {
+		// if (edge.getVertexFromId() == node && edge.getVertexToId() == target)
+		// {
+		// return edge.getWeight();
+		// }
+		// }
+		// throw new RuntimeException("Should not happen");
 	}
 
-	private List<Long> getNeighbors(Long node) {
-		List<Long> neighbors = new ArrayList<Long>();
-		for (EdgeInterface edge : edges) {
-			if (edge.getVertexFromId() == node && !isSettled(edge.getVertexToId())) {
-				neighbors.add(edge.getVertexToId());
+	private List<EdgeInterface> getNeighbors(Long node) {
+		List<EdgeInterface> tmp = new ArrayList<EdgeInterface>();
+		if (neighbors.get(node) != null) {
+			for (EdgeInterface edge : neighbors.get(node)) {
+				if (!isSettled(edge.getVertexToId())) {
+					tmp.add(edge);
+				}
 			}
 		}
-		return neighbors;
+		return tmp;
 	}
 
 	private Long getMinimum(Set<Long> vertexes) {
@@ -95,7 +119,8 @@ public class DijkstraAlgorithm {
 		}
 	}
 
-	public LinkedList<? extends EdgeInterface> getPath(VertexInterface target) {
+	private LinkedList<? extends EdgeInterface> computePath(VertexInterface target) {
+		System.out.println("To: " + target.getId());
 		LinkedList<Long> pathIds = new LinkedList<Long>();
 		Long step = target.getId();
 		// check if a path exists
@@ -109,17 +134,17 @@ public class DijkstraAlgorithm {
 		}
 		// Put it into the correct order
 		Collections.reverse(pathIds);
-		
+
 		LinkedList<EdgeInterface> path = new LinkedList<EdgeInterface>();
-		for(int i=0;i<pathIds.size()-1;i++) {
-			for(EdgeInterface edge : edges) {
-				if(edge.getVertexFromId()==pathIds.get(i) && edge.getVertexToId()==pathIds.get(i+1)) {
+		for (int i = 0; i < pathIds.size() - 1; i++) {
+			for (EdgeInterface edge : edges) {
+				if (edge.getVertexFromId() == pathIds.get(i) && edge.getVertexToId() == pathIds.get(i + 1)) {
 					path.add(edge);
 					// edges.remove(edge);
 				}
 			}
 		}
-		
+
 		return path;
 	}
 
