@@ -16,7 +16,7 @@ import com.iblue.auth.BasicAuthService;
 import com.iblue.model.StreetDAOInterface;
 import com.iblue.model.msg.StreetJSON;
 import com.iblue.model.StreetInterface;
-import com.iblue.model.db.StreetDAO;
+import com.iblue.model.db.dao.StreetDAO;
 
 @Path("/street")
 public class StreetService {

@@ -16,7 +16,7 @@ import org.json.JSONException;
 
 import com.iblue.model.SpotDAOInterface;
 import com.iblue.model.SpotInterface;
-import com.iblue.model.db.SpotDAO;
+import com.iblue.model.db.dao.SpotDAO;
 import com.iblue.queue.SpotSendQueueInterface;
 import com.iblue.queue.mq.send.SpotSendQueueService;
 import com.iblue.auth.AuthServiceInterface;

@@ -19,7 +19,8 @@ DROP TABLE IF EXISTS `map_tmp`.`named_streets`;
 CREATE TABLE `map_tmp`.`named_streets` (
   way_id bigint,
   name varchar(255),
-  ref_name varchar(255)
+  ref_name varchar(255),
+  way_desc varchar(255)
 );
 
 LOAD DATA LOCAL INFILE 'tmp/named.csv' INTO TABLE `map_tmp`.`named_streets`
@@ -47,11 +48,13 @@ LOAD DATA LOCAL INFILE 'tmp/geo.csv' INTO TABLE `map_tmp`.`geo_streets`
 
 -- --------------------------------------------------------------------------------------
 
-insert into `map_fdm`.`named_streets` (pk_id, str_name, str_reference)
-select tmp.way_id, tmp.name, tmp.ref_name
+insert into `map_fdm`.`named_streets` (pk_id, str_name, str_reference, fk_named_street_type_id)
+select tmp.way_id, tmp.name, tmp.ref_name, stypes.pk_id
 from `map_tmp`.`named_streets` tmp
   left join `map_fdm`.`named_streets` dest
     on tmp.way_id = dest.pk_id
+  join `map_fdm`.`named_street_types` stypes
+    on tmp.way_desc = stypes.str_named_street_type
 where
   dest.pk_id is null;
 

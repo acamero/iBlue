@@ -1,4 +1,4 @@
-package com.iblue.model.db;
+package com.iblue.model.db.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.query.Query;
 
 import com.iblue.model.SpotInterface;
+import com.iblue.model.db.WeightedStreet;
 
 public class WeightedStreetDAO extends MasterDAO {
 	// 0.015 ~ 1.5km

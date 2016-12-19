@@ -14,12 +14,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.iblue.model.db.GeoStreet;
-import com.iblue.model.db.ParkingAlloc;
 import com.iblue.model.db.Spot;
-import com.iblue.model.db.StreetDAO;
 import com.iblue.model.db.WeightedStreet;
-import com.iblue.model.db.WeightedStreetDAO;
-import com.iblue.path.AStarAlgorithm;
+import com.iblue.model.db.dao.StreetDAO;
+import com.iblue.model.db.dao.WeightedStreetDAO;
+import com.iblue.model.db.service.ParkingAlloc;
 import com.iblue.path.AlgorithmInterface;
 import com.iblue.path.DijkstraAlgorithm;
 
@@ -43,23 +42,18 @@ public class RoutingService {
 		WeightedStreetDAO dao = new WeightedStreetDAO();
 		List<WeightedStreet> map = dao.getGreatCircle(origin, destination);
 		
+		System.out.println("Setting edges " + System.currentTimeMillis());
 		alg.setEdges(map);
-
+		
+		System.out.println("Start routing " + System.currentTimeMillis());
 		@SuppressWarnings("unchecked")
 		LinkedList<WeightedStreet> streets = (LinkedList<WeightedStreet>) alg.getPath(stOrig.getFromIntersection(),
 				stDest.getToIntersection());
+		System.out.println("Route found " + System.currentTimeMillis());
 		
 		return streets;
 	}
 	
-	private LinkedList<WeightedStreet> getRouteAStar(float latitude1, float longitude1, float latitude2,
-			float longitude2) {	
-
-		AlgorithmInterface alg = new AStarAlgorithm();
-		LinkedList<WeightedStreet> streets = getPath(latitude1,longitude1,latitude2,longitude2, alg);
-
-		return streets;
-	}
 
 	private LinkedList<WeightedStreet> getRouteDijkstra(float latitude1, float longitude1, float latitude2,
 			float longitude2) {	
@@ -95,8 +89,8 @@ public class RoutingService {
 		float longitude2 = -4.479890f;
 
 		RoutingService serv = new RoutingService();
-		LinkedList<WeightedStreet> streetIds = serv.getRouteAStar(latitude1, longitude1, latitude2, longitude2);
-		//LinkedList<WeightedStreet> streetIds = serv.getRouteDijkstra(latitude1, longitude1, latitude2, longitude2);
+		
+		LinkedList<WeightedStreet> streetIds = serv.getRouteDijkstra(latitude1, longitude1, latitude2, longitude2);
 
 		for (WeightedStreet st : streetIds) {
 			System.out.println("Street: " + st.toString());

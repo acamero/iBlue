@@ -1,4 +1,4 @@
-package com.iblue.model.db;
+package com.iblue.model.db.dao;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -9,6 +9,8 @@ import org.hibernate.query.Query;
 
 import com.iblue.model.SpotDAOInterface;
 import com.iblue.model.SpotInterface;
+import com.iblue.model.db.Spot;
+import com.iblue.model.db.service.ParkingAlloc;
 
 public class SpotDAO extends MasterDAO  implements SpotDAOInterface {
 

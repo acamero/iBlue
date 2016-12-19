@@ -1,4 +1,4 @@
-package com.iblue.model.db;
+package com.iblue.model.db.service;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -9,6 +9,9 @@ import org.hibernate.query.Query;
 import com.iblue.model.ParkingAllocInterface;
 import com.iblue.model.SpotInterface;
 import com.iblue.model.StreetAvailabilityInterface;
+import com.iblue.model.db.Spot;
+import com.iblue.model.db.StreetAvailability;
+import com.iblue.model.db.dao.SpotDAO;
 
 public class ParkingAlloc implements ParkingAllocInterface {
 

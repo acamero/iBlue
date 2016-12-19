@@ -1,6 +1,8 @@
-package com.iblue.model.db;
+package com.iblue.model.db.dao;
 
 import org.hibernate.Session;
+
+import com.iblue.model.db.service.HibernateUtil;
 
 public abstract class MasterDAO {
 	

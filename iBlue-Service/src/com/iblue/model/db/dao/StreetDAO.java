@@ -1,16 +1,21 @@
-package com.iblue.model.db;
+package com.iblue.model.db.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.hibernate.query.Query;
 
+import com.iblue.model.Pair;
 import com.iblue.model.StreetDAOInterface;
 import com.iblue.model.StreetInterface;
+import com.iblue.model.db.GeoStreet;
+import com.iblue.model.db.Intersection;
+import com.iblue.model.db.service.TileHelper;
 
 public class StreetDAO extends MasterDAO implements StreetDAOInterface {
-	
+
 	private StreetTypeDAO std;
-	
+
 	public StreetDAO() {
 		std = new StreetTypeDAO();
 	}
@@ -22,16 +27,16 @@ public class StreetDAO extends MasterDAO implements StreetDAOInterface {
 			street = (GeoStreet) streetI;
 		} catch (Exception e) {
 			street = new GeoStreet();
-			street.setFromIntersection(new Intersection(streetI.getLatitude1(),streetI.getLongitude1()));
-			street.setToIntersection(new Intersection(streetI.getLatitude2(),street.getLongitude2()));
+			street.setFromIntersection(new Intersection(streetI.getLatitude1(), streetI.getLongitude1()));
+			street.setToIntersection(new Intersection(streetI.getLatitude2(), street.getLongitude2()));
 			street.setLanesBackward(streetI.getLanesBackward());
 			street.setLanesForward(streetI.getLanesForward());
 			street.setNumberOfLanes(streetI.getNumberOfLanes());
 			street.setOneway(streetI.isOneway());
 			street.setParkingCapacity(streetI.getParkingCapacity());
 			street.setRoutable(streetI.isRoutable());
-			street.setStatus(streetI.getStatus());			
-			street.setStreetType(std.getStreetType(streetI.getStreetTypeId()));		
+			street.setStatus(streetI.getStatus());
+			street.setStreetType(std.getStreetType(streetI.getStreetTypeId()));
 		}
 
 		saveTx(street);
@@ -58,14 +63,14 @@ public class StreetDAO extends MasterDAO implements StreetDAOInterface {
 			tmp = street.getToIntersection();
 			tmp.setLatLong(streetI.getLatitude2(), streetI.getLongitude2());
 			street.setToIntersection(tmp);
-			
+
 			street.setLanesBackward(streetI.getLanesBackward());
 			street.setLanesForward(streetI.getLanesForward());
 			street.setNumberOfLanes(streetI.getNumberOfLanes());
 			street.setOneway(streetI.isOneway());
 			street.setParkingCapacity(streetI.getParkingCapacity());
 			street.setRoutable(streetI.isRoutable());
-			street.setStatus(streetI.getStatus());			
+			street.setStatus(streetI.getStatus());
 			street.setStreetType(std.getStreetType(streetI.getStreetTypeId()));
 		}
 
@@ -89,7 +94,7 @@ public class StreetDAO extends MasterDAO implements StreetDAOInterface {
 
 	}
 
-	public StreetInterface getStreet(long id) {
+	public GeoStreet getStreet(long id) {
 		openTx();
 		Query<GeoStreet> query = session.createQuery("from GeoStreet where id = :id", GeoStreet.class);
 		query.setParameter("id", id);
@@ -104,6 +109,24 @@ public class StreetDAO extends MasterDAO implements StreetDAOInterface {
 	public List<GeoStreet> findAll() {
 		openTx();
 		Query<GeoStreet> query = session.createQuery("from GeoStreet", GeoStreet.class);
+		List<GeoStreet> streets = query.getResultList();
+		closeTx();
+		return streets;
+	}
+
+	public List<GeoStreet> getTileBounded(Pair<Long, Long> tileId) {
+		openTx();
+		Query<GeoStreet> query = session.createQuery(
+				"from GeoStreet where status = 1 and fromIntersection.latitude >= :lat1 and fromIntersection.latitude < :lat2 and fromIntersection.longitude >= :lon1 and fromIntersection.longitude < :lon2",
+				GeoStreet.class);
+		Pair<Pair<BigDecimal, BigDecimal>, Pair<BigDecimal, BigDecimal>> bounds = TileHelper.getBounds(tileId);
+		System.out.println(
+				"Get GeoStreets lat>=" + bounds.getFirst().getFirst() + " and lat<" + bounds.getSecond().getFirst()
+				+ " lon>="+bounds.getFirst().getSecond()+" lon<"+bounds.getSecond().getSecond());
+		query.setParameter("lat1", bounds.getFirst().getFirst());
+		query.setParameter("lat2", bounds.getSecond().getFirst());
+		query.setParameter("lon1", bounds.getFirst().getSecond());
+		query.setParameter("lon2", bounds.getSecond().getSecond());
 		List<GeoStreet> streets = query.getResultList();
 		closeTx();
 		return streets;

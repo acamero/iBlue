@@ -1,4 +1,4 @@
-package com.iblue.model.db;
+package com.iblue.model.db.service;
 
 public class DbSchema {
 

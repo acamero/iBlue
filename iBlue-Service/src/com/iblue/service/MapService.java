@@ -14,7 +14,7 @@ import org.json.JSONException;
 
 import com.iblue.model.ParkingAllocInterface;
 import com.iblue.model.StreetAvailabilityInterface;
-import com.iblue.model.db.ParkingAlloc;
+import com.iblue.model.db.service.ParkingAlloc;
 import com.iblue.model.msg.SpotJSON;
 
 @Path("/map")

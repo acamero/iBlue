@@ -14,12 +14,13 @@ import com.iblue.coord.LatLong;
 import com.iblue.coord.ReferenceEllipsoid;
 import com.iblue.coord.UTM;
 import com.iblue.model.SpotInterface;
+import com.iblue.model.db.service.DbSchema;
 
 @Entity
 @Table(name = "spots", schema = DbSchema.DB_SCHEMA)
 public class Spot implements SpotInterface {
 	
-	protected static final int LAT_LON_SCALE = 6;
+	public static final int LAT_LON_SCALE = 6;
 
 	@Id
 	@Column(name = "pk_id")

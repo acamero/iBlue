@@ -10,7 +10,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.iblue.model.SpotDAOInterface;
 import com.iblue.model.SpotInterface;
 import com.iblue.model.db.Spot;
-import com.iblue.model.db.SpotDAO;
+import com.iblue.model.db.dao.SpotDAO;
 import com.iblue.model.msg.SpotJSON;
 import com.iblue.queue.mq.QueueConfiguration;
 import com.iblue.queue.mq.QueueConnection;

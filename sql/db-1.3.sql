@@ -41,15 +41,28 @@ CREATE TABLE `map_fdm`.`street_types` (
   PRIMARY KEY (`pk_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
--- street types ("línea blanca", "zona azul", "zona verde")
-DROP TABLE IF EXISTS `map_fdm`.`named_streets`;
-CREATE TABLE `map_fdm`.`named_streets` (
+-- named street types ("autopista", "calle", etc)
+DROP TABLE IF EXISTS `map_fdm`.`named_street_types`;
+CREATE TABLE `map_fdm`.`named_street_types` (
   `pk_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `str_name` varchar(255) NOT NULL,
-  `str_reference` varchar(255), 
+  `str_named_street_type` varchar(50) NOT NULL,
+  `str_description` varchar(255), 
   `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
   PRIMARY KEY (`pk_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+-- logic streets
+DROP TABLE IF EXISTS `map_fdm`.`named_streets`;
+CREATE TABLE `map_fdm`.`named_streets` (
+  `pk_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `fk_named_street_type_id` bigint(20),
+  `str_name` varchar(255) NOT NULL,
+  `str_reference` varchar(255),
+  `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
+  PRIMARY KEY (`pk_id`),
+  FOREIGN KEY fk_named_street_type (`fk_named_street_type_id`) REFERENCES `map_fdm`.`named_street_types` (`pk_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 -- store the map of streets

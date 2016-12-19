@@ -28,9 +28,12 @@
 		<mapping class="com.iblue.model.db.GeoStreet" />
 		<mapping class="com.iblue.model.db.Intersection" />
 		<mapping class="com.iblue.model.db.NamedStreet" />
+		<mapping class="com.iblue.model.db.NamedStreetType" />
 		<mapping class="com.iblue.model.db.Spot" />
 		<mapping class="com.iblue.model.db.StreetType" />
 		<mapping class="com.iblue.model.db.WeightedStreet" />
+		<mapping class="com.iblue.model.db.GeoStreetWeight" />
+		<mapping class="com.iblue.model.db.WeightType" />
 
 	</session-factory>
 </hibernate-configuration>

@@ -1,8 +1,10 @@
-package com.iblue.model.db;
+package com.iblue.model.db.dao;
 
 import java.util.List;
 
 import org.hibernate.query.Query;
+
+import com.iblue.model.db.StreetType;
 
 
 public class StreetTypeDAO extends MasterDAO {

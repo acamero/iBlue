@@ -2,22 +2,27 @@ package com.iblue.model.db;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
 import com.iblue.model.StreetInterface;
+import com.iblue.model.db.service.DbSchema;
 
 @SqlResultSetMapping(name = "AreaMapResultSet", classes = {
 		@ConstructorResult(targetClass = StreetAvailability.class, columns = {
@@ -70,9 +75,9 @@ public class GeoStreet implements StreetInterface {
 	private int lanesForward;
 	@Column(name = "int_lanes_backward", columnDefinition = "TINYINT")
 	private int lanesBackward;
-	
+
 	@Type(type = "org.hibernate.type.NumericBooleanType")
-	@Column(name = "bl_routable_ind", columnDefinition = "TINYINT")	
+	@Column(name = "bl_routable_ind", columnDefinition = "TINYINT")
 	private boolean routable;
 	@Column(name = "int_parking_capacity", columnDefinition = "SMALLINT")
 	private int parkingCapacity;
@@ -86,6 +91,17 @@ public class GeoStreet implements StreetInterface {
 	private float lineCoeffC;
 	@Column(name = "float_line_sqrt_a2_b2")
 	private float sqrtA2B2;
+
+	@OneToMany(mappedBy = "geoStreet", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Set<GeoStreetWeight> weights;
+
+	public Set<GeoStreetWeight> getWeights() {
+		return weights;
+	}
+
+	public void setWeights(Set<GeoStreetWeight> weights) {
+		this.weights = weights;
+	}
 
 	public int getStatus() {
 		return status;

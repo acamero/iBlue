@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import com.iblue.coord.LatLong;
 import com.iblue.coord.ReferenceEllipsoid;
 import com.iblue.coord.UTM;
+import com.iblue.model.db.service.DbSchema;
 import com.iblue.path.VertexInterface;
 
 @Entity

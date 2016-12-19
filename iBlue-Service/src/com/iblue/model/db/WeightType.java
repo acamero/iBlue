@@ -9,13 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Type;
-
 import com.iblue.model.db.service.DbSchema;
 
 @Entity
-@Table(name = "street_types", schema = DbSchema.DB_SCHEMA)
-public class StreetType {
+@Table(name = "weight_types", schema = DbSchema.DB_SCHEMA)
+public class WeightType {
+
 	@Id
 	@Column(name = "pk_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,44 +25,29 @@ public class StreetType {
 	@Column(name = "ts_create", updatable = false)
 	private Timestamp createTs;
 	
-	@Column(name="str_description")
+	@Column(name = "str_description")
 	private String description;
-	@Column(name="bl_free_parking_ind", columnDefinition = "TINYINT")
-	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private boolean freeParking;
-	
-	//@OneToMany(mappedBy = "streettype", cascade = CascadeType.ALL)
-	//private Set<GeoStreet> geoStreets;
-	
+	@Column(name = "str_name")
+	private String name;
 	public String getDescription() {
 		return description;
 	}
-	
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-	public boolean isFreeParking(){
-		return freeParking;
+	public String getName() {
+		return name;
 	}
-	
-	public void setFreeParking(boolean freeParking) {
-		this.freeParking = freeParking;
+	public void setName(String name) {
+		this.name = name;
 	}
-	
 	public long getId() {
 		return id;
 	}
-	
 	public Timestamp getUpdateTs() {
 		return updateTs;
 	}
-
 	public Timestamp getCreateTs() {
 		return createTs;
 	}
-	
-	//public Set<GeoStreet> getGeoStreets() {
-	//	return geoStreets;
-	//}
 }

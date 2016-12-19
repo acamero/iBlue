@@ -1,4 +1,4 @@
-package com.iblue.model.db;
+package com.iblue.model.db.service;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

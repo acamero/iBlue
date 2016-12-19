@@ -14,6 +14,7 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 
 import com.iblue.model.StreetInterface;
+import com.iblue.model.db.service.DbSchema;
 import com.iblue.path.EdgeInterface;
 
 @Entity
