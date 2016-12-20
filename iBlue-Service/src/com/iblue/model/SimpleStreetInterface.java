@@ -2,7 +2,7 @@ package com.iblue.model;
 
 import java.math.BigDecimal;
 
-public interface StreetInterface {
+public interface SimpleStreetInterface {
 
 	public long getId();
 	// location

@@ -11,11 +11,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.iblue.model.GeoStreetWeightInterface;
 import com.iblue.model.db.service.DbSchema;
 
 @Entity
 @Table(name = "geo_street_weights", schema = DbSchema.DB_SCHEMA)
-public class GeoStreetWeight {
+public class GeoStreetWeight implements GeoStreetWeightInterface {
 
 	@Id
 	@Column(name = "pk_id")
@@ -72,5 +73,15 @@ public class GeoStreetWeight {
 
 	public Timestamp getCreateTs() {
 		return createTs;
+	}
+
+	@Override
+	public long getGeoStreetId() {
+		return geoStreet.getId();
+	}
+
+	@Override
+	public long getWeightTypeId() {
+		return streetType.getId();
 	}
 }

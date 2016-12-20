@@ -7,20 +7,20 @@ import org.hibernate.query.Query;
 
 import com.iblue.model.Pair;
 import com.iblue.model.StreetDAOInterface;
-import com.iblue.model.StreetInterface;
+import com.iblue.model.SimpleStreetInterface;
 import com.iblue.model.db.GeoStreet;
 import com.iblue.model.db.Intersection;
 import com.iblue.model.db.service.TileHelper;
 
-public class StreetDAO extends MasterDAO implements StreetDAOInterface {
+public class GeoStreetDAO extends MasterDAO implements StreetDAOInterface {
 
 	private StreetTypeDAO std;
 
-	public StreetDAO() {
+	public GeoStreetDAO() {
 		std = new StreetTypeDAO();
 	}
 
-	public GeoStreet persist(StreetInterface streetI) {
+	public GeoStreet persist(SimpleStreetInterface streetI) {
 		GeoStreet street;
 
 		try {
@@ -44,7 +44,7 @@ public class StreetDAO extends MasterDAO implements StreetDAOInterface {
 		return street;
 	}
 
-	public GeoStreet update(StreetInterface streetI) {
+	public GeoStreet update(SimpleStreetInterface streetI) {
 		if (streetI == null) {
 			return null;
 		}
@@ -79,7 +79,7 @@ public class StreetDAO extends MasterDAO implements StreetDAOInterface {
 		return street;
 	}
 
-	public void delete(StreetInterface streetI) {
+	public void delete(SimpleStreetInterface streetI) {
 		GeoStreet street = null;
 
 		try {
@@ -117,12 +117,12 @@ public class StreetDAO extends MasterDAO implements StreetDAOInterface {
 	public List<GeoStreet> getTileBounded(Pair<Long, Long> tileId) {
 		openTx();
 		Query<GeoStreet> query = session.createQuery(
-				"from GeoStreet where status = 1 and fromIntersection.latitude >= :lat1 and fromIntersection.latitude < :lat2 and fromIntersection.longitude >= :lon1 and fromIntersection.longitude < :lon2",
+				"from GeoStreet where status = 1 and routable = 1 and fromIntersection.latitude >= :lat1 and fromIntersection.latitude < :lat2 and fromIntersection.longitude >= :lon1 and fromIntersection.longitude < :lon2",
 				GeoStreet.class);
 		Pair<Pair<BigDecimal, BigDecimal>, Pair<BigDecimal, BigDecimal>> bounds = TileHelper.getBounds(tileId);
 		System.out.println(
 				"Get GeoStreets lat>=" + bounds.getFirst().getFirst() + " and lat<" + bounds.getSecond().getFirst()
-				+ " lon>="+bounds.getFirst().getSecond()+" lon<"+bounds.getSecond().getSecond());
+						+ " lon>=" + bounds.getFirst().getSecond() + " lon<" + bounds.getSecond().getSecond());
 		query.setParameter("lat1", bounds.getFirst().getFirst());
 		query.setParameter("lat2", bounds.getSecond().getFirst());
 		query.setParameter("lon1", bounds.getFirst().getSecond());
@@ -139,6 +139,36 @@ public class StreetDAO extends MasterDAO implements StreetDAOInterface {
 		List<GeoStreet> streets = query.getResultList();
 		closeTx();
 		return streets;
+	}
+
+	public Pair<BigDecimal, BigDecimal> getLatitudeBoundaries() {
+		Pair<BigDecimal, BigDecimal> bounds = null;
+		openTx();
+		@SuppressWarnings("rawtypes")
+		Query query = session.createQuery("select min(latitude), max(latitude) from Intersection");
+		Object[] res = null;
+		try {
+			res = (Object[]) query.getSingleResult();
+			bounds = new Pair<BigDecimal, BigDecimal>((BigDecimal) res[0], (BigDecimal) res[1]);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bounds;
+	}
+
+	public Pair<BigDecimal, BigDecimal> getLongitudeBoundaries() {
+		Pair<BigDecimal, BigDecimal> bounds = null;
+		openTx();
+		@SuppressWarnings("rawtypes")
+		Query query = session.createQuery("select min(longitude), max(longitude) from Intersection");
+		Object[] res = null;
+		try {
+			res = (Object[]) query.getSingleResult();
+			bounds = new Pair<BigDecimal, BigDecimal>((BigDecimal) res[0], (BigDecimal) res[1]);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bounds;
 	}
 
 }

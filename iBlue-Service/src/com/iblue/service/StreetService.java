@@ -15,8 +15,8 @@ import com.iblue.auth.AuthServiceInterface;
 import com.iblue.auth.BasicAuthService;
 import com.iblue.model.StreetDAOInterface;
 import com.iblue.model.msg.StreetJSON;
-import com.iblue.model.StreetInterface;
-import com.iblue.model.db.dao.StreetDAO;
+import com.iblue.model.SimpleStreetInterface;
+import com.iblue.model.db.dao.GeoStreetDAO;
 
 @Path("/street")
 public class StreetService {
@@ -31,10 +31,10 @@ public class StreetService {
 			return Response.status(200).entity("Null list").build();
 		}
 
-		StreetDAOInterface dao = new StreetDAO();
+		StreetDAOInterface dao = new GeoStreetDAO();
 		int counter = 0;
 
-		for (StreetInterface street : streets) {
+		for (SimpleStreetInterface street : streets) {
 			street = dao.persist(street);
 			if (street != null) {
 				counter++;
@@ -78,10 +78,10 @@ public class StreetService {
 		String response = "";
 		if (auth.isValidMsg(street)) {
 			
-			StreetDAOInterface dao = new StreetDAO();
+			StreetDAOInterface dao = new GeoStreetDAO();
 
 			if (street.getId() > 0) {
-				StreetInterface tmp = dao.update(street);
+				SimpleStreetInterface tmp = dao.update(street);
 				if (tmp != null) {
 					response = tmp.toString();
 					System.out.println("Street updated (id=" + tmp.getId() + ")");
@@ -90,7 +90,7 @@ public class StreetService {
 					System.out.println(response);
 				}
 			} else {
-				StreetInterface tmp = dao.persist(street);
+				SimpleStreetInterface tmp = dao.persist(street);
 				System.out.println("Street created (id=" + street.getId() + ")");
 				response = tmp.toString();
 			}

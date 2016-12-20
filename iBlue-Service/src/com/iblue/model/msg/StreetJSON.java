@@ -1,12 +1,12 @@
 package com.iblue.model.msg;
 
-import com.iblue.model.StreetInterface;
+import com.iblue.model.SimpleStreetInterface;
 
 import java.math.BigDecimal;
 
 import com.iblue.auth.AuthMsgInterface;
 
-public class StreetJSON implements StreetInterface, AuthMsgInterface {
+public class StreetJSON implements SimpleStreetInterface, AuthMsgInterface {
 
 	private BigDecimal latitude1;
 	private BigDecimal longitude1;

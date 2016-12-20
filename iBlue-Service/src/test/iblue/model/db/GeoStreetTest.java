@@ -9,14 +9,14 @@ import org.junit.Test;
 import com.iblue.model.Pair;
 import com.iblue.model.db.GeoStreet;
 import com.iblue.model.db.GeoStreetWeight;
-import com.iblue.model.db.dao.StreetDAO;
+import com.iblue.model.db.dao.GeoStreetDAO;
 
 
 public class GeoStreetTest {
 
 	@Test
 	public void streetWeight() {
-		StreetDAO dao = new StreetDAO();
+		GeoStreetDAO dao = new GeoStreetDAO();
 		GeoStreet street = dao.getStreet(9);
 		System.out.println("Street id: " + street.getId());
 		
@@ -30,7 +30,7 @@ public class GeoStreetTest {
 	@Test
 	public void test() {
 		Pair<Long,Long> tileId = new Pair<Long,Long>(3650l,-475l);
-		StreetDAO dao = new StreetDAO();
+		GeoStreetDAO dao = new GeoStreetDAO();
 		List<GeoStreet> street = dao.getTileBounded(tileId);
 		assertEquals(16,street.size());				
 	}

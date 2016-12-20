@@ -13,14 +13,14 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 
-import com.iblue.model.StreetInterface;
+import com.iblue.model.SimpleStreetInterface;
 import com.iblue.model.db.service.DbSchema;
-import com.iblue.path.EdgeInterface;
+
 
 @Entity
 @Immutable
 @Table(name = "vw_geo_streets_weighted", schema = DbSchema.DB_SCHEMA)
-public class WeightedStreet implements EdgeInterface, StreetInterface {
+public class WeightedStreet implements SimpleStreetInterface {
 	protected static final int LAT_LON_SCALE = 7;
 
 	@Id
@@ -95,7 +95,7 @@ public class WeightedStreet implements EdgeInterface, StreetInterface {
 		return weightTypeId;
 	}
 
-	@Override
+	
 	public float getWeight() {
 		return weight;
 	}
@@ -116,15 +116,7 @@ public class WeightedStreet implements EdgeInterface, StreetInterface {
 		return longitudeTo;
 	}
 
-	@Override
-	public long getVertexFromId() {		
-		return intersectionFromId;
-	}
-
-	@Override
-	public long getVertexToId() {
-		return intersectionToId;
-	}
+	
 	
 	@Override
 	public BigDecimal getLatitude1() {		

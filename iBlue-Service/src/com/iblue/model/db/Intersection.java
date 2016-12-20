@@ -13,12 +13,13 @@ import javax.persistence.Table;
 import com.iblue.coord.LatLong;
 import com.iblue.coord.ReferenceEllipsoid;
 import com.iblue.coord.UTM;
+import com.iblue.model.IntersectionInterface;
 import com.iblue.model.db.service.DbSchema;
-import com.iblue.path.VertexInterface;
 
 @Entity
 @Table(name = "intersections", schema = DbSchema.DB_SCHEMA)
-public class Intersection implements VertexInterface {
+public class Intersection implements IntersectionInterface {
+	private static final long serialVersionUID = 4914071534092518740L;
 
 	protected static final int LAT_LON_SCALE = 7;
 	
@@ -109,5 +110,17 @@ public class Intersection implements VertexInterface {
 	//public Set<GeoStreet> getGeoStreets() {
 	//	return geoStreets;
 	//}
+	
+	public String toString() {
+		return "{" +
+				"\"id\":\"" + "\"," +
+				"\"latitude\":\"" + latitude + "\"," +
+				"\"longitude\":\"" + longitude + "\"," +
+				"\"northing\":\"" + northing + "\"," +
+				"\"easting\":\"" + easting + "\"," +
+				"\"latitudeZone\":\"" + latitudeZone + "\"," +
+				"\"longitudeZone\":\"" + longitudeZone + "\"" +
+				"}";
+	}
 	
 }

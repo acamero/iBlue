@@ -21,7 +21,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
-import com.iblue.model.StreetInterface;
+import com.iblue.model.GeoStreetInterface;
 import com.iblue.model.db.service.DbSchema;
 
 @SqlResultSetMapping(name = "AreaMapResultSet", classes = {
@@ -37,7 +37,7 @@ import com.iblue.model.db.service.DbSchema;
 
 @Entity
 @Table(name = "geo_streets", schema = DbSchema.DB_SCHEMA)
-public class GeoStreet implements StreetInterface {
+public class GeoStreet implements GeoStreetInterface {
 
 	@Id
 	@Column(name = "pk_id")

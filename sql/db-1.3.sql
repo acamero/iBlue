@@ -156,7 +156,16 @@ CREATE TABLE `map_fdm`.`geo_street_weights` (
   FOREIGN KEY fk_weight_type (`fk_weight_type_id`) REFERENCES `map_fdm`.`weight_types` (`pk_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
-
+-- tiles (pre calculated matrices)
+DROP TABLE IF EXISTS `map_fdm`.`tile_container`;
+CREATE TABLE `map_fdm`.`tile_container` (
+  `pk_latitude_id` bigint(20) NOT NULL,
+  `pk_longitude_id` bigint(20) NOT NULL,
+  `byte_tile` longblob,
+  `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`pk_latitude_id`,`pk_longitude_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 -- ------------------------------------------------------------------
 -- Pre compute calculations on geo_street new or updated record

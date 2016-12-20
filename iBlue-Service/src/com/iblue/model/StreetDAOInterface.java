@@ -2,17 +2,20 @@ package com.iblue.model;
 
 import java.util.List;
 
+
 public interface StreetDAOInterface {
 
-	public StreetInterface persist(StreetInterface street);
+	public SimpleStreetInterface persist(SimpleStreetInterface street);
 
-	public StreetInterface update(StreetInterface street);
+	public SimpleStreetInterface update(SimpleStreetInterface street);
 
-	public void delete(StreetInterface street);
+	public void delete(SimpleStreetInterface street);
 
-	public StreetInterface getStreet(long id);
+	public SimpleStreetInterface getStreet(long id);
 
-	public List<? extends StreetInterface> findAll();
+	public List<? extends SimpleStreetInterface> findAll();
 
-	public List<? extends StreetInterface> findAllActive();
+	public List<? extends SimpleStreetInterface> findAllActive();
+	
+	public List<? extends GeoStreetInterface> getTileBounded(Pair<Long, Long> tileId);
 }

@@ -98,6 +98,8 @@
 		<iblue.core.version>1.0.7-RELEASE</iblue.core.version>
 		<rabbitmq.version>3.6.5</rabbitmq.version>
 		<c3p0.version>0.9.2</c3p0.version>
+		<junit.version>4.11</junit.version>
+		<guava.version>20.0-rc1</guava.version>
 	</properties>
 
 
@@ -160,5 +162,21 @@
 
 		<!-- iBlue Core <dependency> <groupId>com.iblue</groupId> <artifactId>iBlue-Core</artifactId> 
 			<version>${iblue.core.version}</version> </dependency> -->
+
+		<!-- JUNIT -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+		</dependency>
+
+		<!-- Guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
+
+
 	</dependencies>
 </project>
