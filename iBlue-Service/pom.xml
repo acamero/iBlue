@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>iBlue-Service</groupId>
 	<artifactId>iBlue-Service</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.2-RELEASE</version>
 	<packaging>war</packaging>
 	<build>
 		<sourceDirectory>src</sourceDirectory>

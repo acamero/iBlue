@@ -12,9 +12,11 @@
 	<form id="get-route" action="javascript:getRoute();">
 		<table>
 			<tr>
-				<th colspan="2">Origen</th>
+				<th colspan="3">Origen</th>
 			</tr>
 			<tr>
+				<td rowspan="2"><img
+					src="<c:url value="/resources/img/blue_MarkerA.png" />" /></td>
 				<td>Latitud:</td>
 				<td><input type="text" name="latitude1" id="latitude1" value="" /></td>
 			</tr>
@@ -24,9 +26,11 @@
 					value="" /></td>
 			</tr>
 			<tr>
-				<th colspan="2">Destino</th>
+				<th colspan="3">Destino</th>
 			</tr>
 			<tr>
+				<td rowspan="2"><img
+					src="<c:url value="/resources/img/brown_MarkerA.png" />" /></td>
 				<td>Latitud:</td>
 				<td><input type="text" name="latitude2" id="latitude2" value="" /></td>
 			</tr>

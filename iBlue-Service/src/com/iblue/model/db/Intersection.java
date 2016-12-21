@@ -113,7 +113,7 @@ public class Intersection implements IntersectionInterface {
 	
 	public String toString() {
 		return "{" +
-				"\"id\":\"" + "\"," +
+				"\"id\":\"" + id + "\"," +
 				"\"latitude\":\"" + latitude + "\"," +
 				"\"longitude\":\"" + longitude + "\"," +
 				"\"northing\":\"" + northing + "\"," +

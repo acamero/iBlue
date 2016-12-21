@@ -25,8 +25,8 @@ import com.iblue.path.GraphInterface;
 @Path("/route")
 public class RoutingService {
 
-	private LinkedList<IntersectionInterface> getPath(float latitude1, float longitude1, float latitude2, float longitude2,
-			AlgorithmInterface alg) {
+	private LinkedList<IntersectionInterface> getPath(float latitude1, float longitude1, float latitude2,
+			float longitude2, AlgorithmInterface alg) {
 		Spot origin = new Spot();
 		origin.setLatLong(new BigDecimal(latitude1), new BigDecimal(longitude1));
 		Spot destination = new Spot();
@@ -46,7 +46,7 @@ public class RoutingService {
 		alg.setGraph(graph);
 
 		System.out.println("Start routing " + System.currentTimeMillis());
-		
+
 		LinkedList<IntersectionInterface> path = alg.getPath(stOrig.getFromIntersection(),
 				stDest.getFromIntersection());
 		System.out.println("Route found " + System.currentTimeMillis());
@@ -64,7 +64,7 @@ public class RoutingService {
 	}
 
 	@GET
-	@Path("/dijkstra/from/{latitude1}/{longitude1}/to/{latitude2}/{longitude2}")
+	@Path("/from/{latitude1}/{longitude1}/to/{latitude2}/{longitude2}")
 	@Produces("application/json")
 	public Response getDijkstra(@PathParam("latitude1") float latitude1, @PathParam("longitude1") float longitude1,
 			@PathParam("latitude2") float latitude2, @PathParam("longitude2") float longitude2) throws JSONException {
@@ -81,21 +81,26 @@ public class RoutingService {
 		return Response.status(200).entity(jsonArray.toString()).build();
 	}
 
-	public static void main(String[] args) {
-		float latitude1 = 36.719678f;
-		float longitude1 = -4.479118f;
-		float latitude2 = 36.627789f;
-		float longitude2 = -4.494637f;
-
-		RoutingService serv = new RoutingService();
-
-		LinkedList<IntersectionInterface> path = serv.getRouteDijkstra(latitude1, longitude1, latitude2, longitude2);
-
-		for (IntersectionInterface st : path) {
-			System.out.println("Intersection: " + st.toString());
+	@GET
+	@Path("/compute/{key}")
+	@Produces("application/json")
+	public Response computeMap(@PathParam("key") String key) {
+		String resp = "{\"compute\":\"key error\"}";
+		if (key.equals("aq1sw2de3")) {
+			Thread computer = new Thread(new Runnable() {
+				public void run() {
+					System.out.println("Start computing in new trhread");;
+					TileService service = new TileService();
+					String compResp = service.computeMap();
+					System.out.println("Finish computing "+ compResp);
+				}
+			});
+			computer.start();
+			resp = "{\"compute\":\"processing in another thread\"}";
 		}
-
-		System.exit(0);
+		return Response.status(200).entity(resp).build();
 	}
+	
+	
 
 }

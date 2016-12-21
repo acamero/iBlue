@@ -59,7 +59,7 @@ public class TileService {
 		return tile;
 	}
 
-	public void computeMap() {
+	public String computeMap() {
 		GeoStreetDAO dao = new GeoStreetDAO();
 		Pair<BigDecimal, BigDecimal> latBounds = dao.getLatitudeBoundaries();
 		System.out.println("Lat min=" + latBounds.getFirst() + " max=" + latBounds.getSecond());
@@ -67,6 +67,8 @@ public class TileService {
 		Pair<BigDecimal, BigDecimal> lonBounds = dao.getLongitudeBoundaries();
 		System.out.println("Lon min=" + lonBounds.getFirst() + " max=" + lonBounds.getSecond());
 
+		int added = 0;
+		int updated = 0;
 		List<Pair<Long, Long>> tileIds = TileHelper.getBoundariesTileId(latBounds, lonBounds);
 		for (Pair<Long, Long> id : tileIds) {
 			System.out.println("Build tile latId=" + id.getFirst() + " lonId=" + id.getSecond());
@@ -78,12 +80,16 @@ public class TileService {
 				tileCont.setTile(tile);
 				tileDAO.persist(tileCont);
 				System.out.println("New tile added");
+				added++;
 			} else {
 				tileCont.setTile(tile);
 				tileDAO.update(tileCont);
 				System.out.println("Tile updated");
+				updated++;
 			}
 		}
+		
+		return added + " tiles added and " + updated + " tiles updated";
 	}
 
 	public Tile getTile(BigDecimal latFrom, BigDecimal lonFrom, BigDecimal latTo, BigDecimal lonTo) {
@@ -96,7 +102,7 @@ public class TileService {
 		tile.setWeightsMatrix(HashBasedTable.create());
 
 		for (TileContainer tc : tileConts) {
-			System.out.println("Tile id: "+tc.getIdLatitude()+ " "+tc.getIdLongitude());
+			System.out.println("Tile id: " + tc.getIdLatitude() + " " + tc.getIdLongitude());
 			System.out.println("Intersections: " + tc.getTile().getIntersections().size());
 			System.out.println("Weights: " + tc.getTile().getWeightsMatrix().size());
 			System.out.println("Edges: " + tc.getTile().getAdjacencyMatrix().size());
@@ -104,7 +110,7 @@ public class TileService {
 			tile.appendIntersections(tc.getTile().getIntersections());
 			tile.appendWeights(tc.getTile().getWeightsMatrix());
 		}
-				
+
 		return tile;
 	}
 
