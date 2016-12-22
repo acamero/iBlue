@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.iblue.model.Pair;
 import com.iblue.model.db.GeoStreet;
 import com.iblue.model.db.GeoStreetWeight;
 import com.iblue.model.db.dao.GeoStreetDAO;
+import com.iblue.utils.Pair;
 
 
 public class GeoStreetTest {

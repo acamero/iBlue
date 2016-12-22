@@ -12,8 +12,11 @@ import javax.ws.rs.core.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import com.iblue.model.GeoStreetInterface;
 import com.iblue.model.IntersectionInterface;
-import com.iblue.model.db.GeoStreet;
+import com.iblue.model.ParkingAllocInterface;
+import com.iblue.model.StreetDAOInterface;
+import com.iblue.model.TileServiceInterface;
 import com.iblue.model.db.Spot;
 import com.iblue.model.db.dao.GeoStreetDAO;
 import com.iblue.model.db.service.ParkingAlloc;
@@ -27,20 +30,22 @@ public class RoutingService {
 
 	private LinkedList<IntersectionInterface> getPath(float latitude1, float longitude1, float latitude2,
 			float longitude2, AlgorithmInterface alg) {
+		
+		// 
 		Spot origin = new Spot();
-		origin.setLatLong(new BigDecimal(latitude1), new BigDecimal(longitude1));
+		origin.setLatLong(new BigDecimal(latitude1), new BigDecimal(longitude1));		
 		Spot destination = new Spot();
 		destination.setLatLong(new BigDecimal(latitude2), new BigDecimal(longitude2));
 
-		ParkingAlloc park = new ParkingAlloc();
+		ParkingAllocInterface park = new ParkingAlloc();
 		long originId = park.getNearestStreetId(origin);
 		long destId = park.getNearestStreetId(destination);
-		GeoStreetDAO stDao = new GeoStreetDAO();
-		GeoStreet stOrig = (GeoStreet) stDao.getStreet(originId);
-		GeoStreet stDest = (GeoStreet) stDao.getStreet(destId);
+		StreetDAOInterface stDao = new GeoStreetDAO();
+		GeoStreetInterface stOrig = (GeoStreetInterface) stDao.getStreet(originId);
+		GeoStreetInterface stDest = (GeoStreetInterface) stDao.getStreet(destId);
 
 		System.out.println("Setting graph " + System.currentTimeMillis());
-		TileService serv = new TileService();
+		TileServiceInterface serv = new TileService();
 		GraphInterface graph = serv.getTile(origin.getLatitude(), origin.getLongitude(), destination.getLatitude(),
 				destination.getLongitude());
 		alg.setGraph(graph);
@@ -54,25 +59,21 @@ public class RoutingService {
 		return path;
 	}
 
-	private LinkedList<IntersectionInterface> getRouteDijkstra(float latitude1, float longitude1, float latitude2,
-			float longitude2) {
-
-		AlgorithmInterface alg = new Dijkstra();
-		LinkedList<IntersectionInterface> path = getPath(latitude1, longitude1, latitude2, longitude2, alg);
-
-		return path;
-	}
-
 	@GET
 	@Path("/from/{latitude1}/{longitude1}/to/{latitude2}/{longitude2}")
 	@Produces("application/json")
-	public Response getDijkstra(@PathParam("latitude1") float latitude1, @PathParam("longitude1") float longitude1,
+	public Response getRoute(@PathParam("latitude1") float latitude1, @PathParam("longitude1") float longitude1,
 			@PathParam("latitude2") float latitude2, @PathParam("longitude2") float longitude2) throws JSONException {
 		System.out.println(
 				"Route from lat=" + latitude1 + " lon=" + longitude1 + " to lat=" + latitude2 + " lon=" + longitude2);
 
+		// TODO include algorithm parameters in the RQ
+		
 		JSONArray jsonArray = new JSONArray();
-		LinkedList<IntersectionInterface> path = getRouteDijkstra(latitude1, longitude1, latitude2, longitude2);
+		
+		// TODO change algorithm selection
+		AlgorithmInterface alg = new Dijkstra();
+		LinkedList<IntersectionInterface> path = getPath(latitude1, longitude1, latitude2, longitude2, alg);
 
 		for (IntersectionInterface st : path) {
 			// System.out.println(st.toString());
@@ -90,7 +91,7 @@ public class RoutingService {
 			Thread computer = new Thread(new Runnable() {
 				public void run() {
 					System.out.println("Start computing in new trhread");;
-					TileService service = new TileService();
+					TileServiceInterface service = new TileService();
 					String compResp = service.computeMap();
 					System.out.println("Finish computing "+ compResp);
 				}

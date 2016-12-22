@@ -12,13 +12,14 @@ import javax.persistence.Transient;
 
 import org.hibernate.internal.util.SerializationHelper;
 
-import com.iblue.model.Pair;
 import com.iblue.model.Tile;
+import com.iblue.model.TileContainerInterface;
 import com.iblue.model.db.service.DbSchema;
+import com.iblue.utils.Pair;
 
 @Entity
 @Table(name = "tile_container", schema = DbSchema.DB_SCHEMA)
-public class TileContainer implements Serializable {
+public class TileContainer implements Serializable, TileContainerInterface {
 
 	private static final long serialVersionUID = -1863411281979689540L;
 	@Id

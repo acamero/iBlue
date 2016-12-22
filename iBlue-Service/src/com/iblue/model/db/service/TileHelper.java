@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iblue.model.Pair;
+import com.iblue.utils.Pair;
 
 public class TileHelper {
 

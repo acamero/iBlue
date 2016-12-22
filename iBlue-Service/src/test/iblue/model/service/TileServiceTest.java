@@ -9,13 +9,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.iblue.model.Tile;
-import com.iblue.model.Pair;
 import com.iblue.model.db.GeoStreet;
 import com.iblue.model.db.TileContainer;
 import com.iblue.model.db.dao.GeoStreetDAO;
 import com.iblue.model.db.dao.TileDAO;
 import com.iblue.model.db.service.TileHelper;
 import com.iblue.model.db.service.TileService;
+import com.iblue.utils.Pair;
 
 public class TileServiceTest {
 	private static BigDecimal lat, lon;

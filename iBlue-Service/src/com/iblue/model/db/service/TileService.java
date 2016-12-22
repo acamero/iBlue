@@ -8,16 +8,20 @@ import java.util.Map;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.iblue.model.IntersectionInterface;
-import com.iblue.model.Pair;
 import com.iblue.model.StreetDAOInterface;
 import com.iblue.model.Tile;
+import com.iblue.model.TileCacheInterface;
+import com.iblue.model.TileContainerInterface;
+import com.iblue.model.TileServiceInterface;
+import com.iblue.model.cache.GuavaCache;
 import com.iblue.model.GeoStreetInterface;
 import com.iblue.model.GeoStreetWeightInterface;
 import com.iblue.model.db.TileContainer;
 import com.iblue.model.db.dao.GeoStreetDAO;
 import com.iblue.model.db.dao.TileDAO;
+import com.iblue.utils.Pair;
 
-public class TileService {
+public class TileService implements TileServiceInterface {
 
 	private StreetDAOInterface streetDAO;
 	private TileDAO tileDAO;
@@ -93,16 +97,20 @@ public class TileService {
 	}
 
 	public Tile getTile(BigDecimal latFrom, BigDecimal lonFrom, BigDecimal latTo, BigDecimal lonTo) {
+		
 		List<Pair<Long, Long>> tileIds = TileHelper.getListTileId(latFrom, lonFrom, latTo, lonTo);
-		List<TileContainer> tileConts = tileDAO.getTile(tileIds);
+		TileCacheInterface tileCache = GuavaCache.getInstance();
+		@SuppressWarnings("unchecked")
+		List<TileContainerInterface> tileConts = (List<TileContainerInterface>)tileCache.getTiles(tileIds);
+		
 		// System.out.println("Tiles number " + tileConts.size());
 		Tile tile = new Tile();
 		tile.setAdjacencyMatrix(HashBasedTable.create());
 		tile.setIntersections(new HashMap<Long, IntersectionInterface>());
 		tile.setWeightsMatrix(HashBasedTable.create());
 
-		for (TileContainer tc : tileConts) {
-			System.out.println("Tile id: " + tc.getIdLatitude() + " " + tc.getIdLongitude());
+		for (TileContainerInterface tc : tileConts) {
+			System.out.println("Tile id: " + tc.getTileId().getFirst() + " " + tc.getTileId().getSecond());
 			System.out.println("Intersections: " + tc.getTile().getIntersections().size());
 			System.out.println("Weights: " + tc.getTile().getWeightsMatrix().size());
 			System.out.println("Edges: " + tc.getTile().getAdjacencyMatrix().size());

@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.hibernate.query.Query;
 
-import com.iblue.model.Pair;
 import com.iblue.model.db.TileContainer;
+import com.iblue.utils.Pair;
 
 public class TileDAO extends MasterDAO {
 
@@ -38,7 +38,7 @@ public class TileDAO extends MasterDAO {
 		return tiles.get(0);
 	}
 
-	public List<TileContainer> getTile(List<Pair<Long, Long>> tileIds) {
+	public List<TileContainer> getTiles(List<Pair<Long, Long>> tileIds) {
 		List<TileContainer> tileConts = new ArrayList<TileContainer>();
 
 		openTx();

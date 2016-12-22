@@ -34,6 +34,13 @@ public class ParkingAlloc implements ParkingAllocInterface {
 		} catch (Exception e) {
 			SpotDAO dao = new SpotDAO();
 			spot = dao.getSpot(spotI.getId());
+			if(spot==null) {
+				// if no spot is found on DB
+				spot = new Spot();
+				spot.setLatLong(spotI.getLatitude(), spotI.getLongitude());
+				spot.setMac(spotI.getMac());
+				spot.setStatus(spotI.getStatus());
+			}
 		}
 		open();
 		String queryString = "CALL " + DbSchema.DB_SCHEMA

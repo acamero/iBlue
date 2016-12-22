@@ -20,7 +20,7 @@ public class RoutingServiceTest {
 
 		RoutingService serv = new RoutingService();
 
-		Response resp = serv.getDijkstra(latitude1, longitude1, latitude2, longitude2);
+		Response resp = serv.getRoute(latitude1, longitude1, latitude2, longitude2);
 
 		String body = (String)resp.getEntity();
 

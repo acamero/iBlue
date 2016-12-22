@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.hibernate.query.Query;
 
-import com.iblue.model.Pair;
 import com.iblue.model.StreetDAOInterface;
 import com.iblue.model.SimpleStreetInterface;
 import com.iblue.model.db.GeoStreet;
 import com.iblue.model.db.Intersection;
 import com.iblue.model.db.service.TileHelper;
+import com.iblue.utils.Pair;
 
 public class GeoStreetDAO extends MasterDAO implements StreetDAOInterface {
 

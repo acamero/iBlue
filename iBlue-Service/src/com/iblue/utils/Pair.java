@@ -1,4 +1,4 @@
-package com.iblue.model;
+package com.iblue.utils;
 
 public class Pair<A, B> {
     private A first;
