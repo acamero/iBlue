@@ -1,6 +1,7 @@
 package com.iblue.queue;
 
 import com.iblue.queue.mq.reader.SpotReaderMQ;
+import com.iblue.utils.Log;
 
 public class ReaderMain {
 
@@ -18,22 +19,21 @@ public class ReaderMain {
 		SpotReaderMQ reader = new SpotReaderMQ();
 
 		reader.startReceiving();
-		System.out.println("Start");
+		Log.info("Start");
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.error(e.getMessage());
 		}
 		reader.stopReceiving();
-		System.out.println("Stop");
+		Log.info("Stop");
 		
 	}
 	 
 	private static void deploy() {
 		SpotReaderMQ reader = new SpotReaderMQ();
 
-		System.out.println("Start reading queue");
+		Log.info("Start reading queue");
 		reader.startReceiving();		
 		
 	}

@@ -19,6 +19,7 @@ import com.iblue.model.SpotInterface;
 import com.iblue.model.db.dao.SpotDAO;
 import com.iblue.queue.SpotSendQueueInterface;
 import com.iblue.queue.mq.send.SpotSendQueueService;
+import com.iblue.utils.Log;
 import com.iblue.auth.AuthServiceInterface;
 import com.iblue.auth.BasicAuthService;
 import com.iblue.model.msg.SpotJSON;
@@ -30,7 +31,7 @@ public class SpotService {
 	@Path("/active")
 	@Produces("application/json")
 	public Response getActiveSpots() throws JSONException {
-		System.out.println("Get all active spots");
+		Log.info("Get all active spots");
 
 		JSONArray jsonArray = new JSONArray();
 		SpotDAOInterface spotDAO = new SpotDAO();
@@ -47,7 +48,7 @@ public class SpotService {
 	@Path("/active/{fromts}")
 	@Produces("application/json")
 	public Response getActiveSpotsFrom(@PathParam("fromts") String fromTsString) throws JSONException {
-		System.out.println("Active spots from " + fromTsString);
+		Log.info("Active spots from " + fromTsString);
 
 		JSONArray jsonArray = new JSONArray();
 		SpotDAOInterface spotDAO = new SpotDAO();
@@ -64,7 +65,7 @@ public class SpotService {
 	@Path("/release/{fromts}")
 	@Produces("application/json")
 	public Response getReleasedSpotsFrom(@PathParam("fromts") String fromTsString) throws JSONException {
-		System.out.println("Released spots from " + fromTsString);
+		Log.info("Released spots from " + fromTsString);
 
 		JSONArray jsonArray = new JSONArray();
 		SpotDAOInterface spotDAO = new SpotDAO();
@@ -82,11 +83,11 @@ public class SpotService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response setSpot(SpotJSON spot) {
 		if (spot == null) {
-			System.out.println("Set null spot");
+			Log.warning("Set null spot");
 			return Response.status(200).entity("NULL").build();
 		}
 
-		System.out.println("Set spot" + spot.toString() + " (id=" + spot.getId() + ")");
+		Log.info("Set spot" + spot.toString() + " (id=" + spot.getId() + ")");
 
 		String response = "NO";
 
@@ -96,10 +97,10 @@ public class SpotService {
 			if (queue.send(spot)) {
 				response = "OK";
 			} else {
-				System.out.println("Unable to put message in queue");
+				Log.error("Unable to put message in queue");
 			}
 		} else {
-			System.out.println("Unauthorized message");
+			Log.warning("Unauthorized message");
 		}
 
 		return Response.status(200).entity(response).build();

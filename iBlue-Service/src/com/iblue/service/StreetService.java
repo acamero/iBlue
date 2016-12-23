@@ -15,6 +15,7 @@ import com.iblue.auth.AuthServiceInterface;
 import com.iblue.auth.BasicAuthService;
 import com.iblue.model.StreetDAOInterface;
 import com.iblue.model.msg.StreetJSON;
+import com.iblue.utils.Log;
 import com.iblue.model.SimpleStreetInterface;
 import com.iblue.model.db.dao.GeoStreetDAO;
 
@@ -25,7 +26,7 @@ public class StreetService {
 	@Path("/bulk")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response addBulkStreet(@Valid List<StreetJSON> streets) {
-		System.out.println("Load bulk streets");
+		Log.info("Load bulk streets");
 
 		if (streets == null) {
 			return Response.status(200).entity("Null list").build();
@@ -71,7 +72,7 @@ public class StreetService {
 		if (street == null) {
 			return Response.status(200).entity("Null street").build();
 		}
-		System.out.println("Set street "+ street.toString());
+		Log.info("Set street "+ street.toString());
 		
 
 		AuthServiceInterface auth = new BasicAuthService();
@@ -84,18 +85,18 @@ public class StreetService {
 				SimpleStreetInterface tmp = dao.update(street);
 				if (tmp != null) {
 					response = tmp.toString();
-					System.out.println("Street updated (id=" + tmp.getId() + ")");
+					Log.info("Street updated (id=" + tmp.getId() + ")");
 				} else {
 					response = "Could not find the spot id=" + street.getId();
-					System.out.println(response);
+					Log.info(response);
 				}
 			} else {
 				SimpleStreetInterface tmp = dao.persist(street);
-				System.out.println("Street created (id=" + street.getId() + ")");
+				Log.info("Street created (id=" + street.getId() + ")");
 				response = tmp.toString();
 			}
 		} else {
-			System.out.println("Unauthorized message");
+			Log.info("Unauthorized message");
 			response = "Unauthorized message";
 		}
 

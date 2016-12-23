@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.iblue.model.IntersectionInterface;
+import com.iblue.utils.Log;
 
 public class Dijkstra implements AlgorithmInterface {
 
@@ -25,14 +26,14 @@ public class Dijkstra implements AlgorithmInterface {
 	@Override
 	public void setGraph(GraphInterface graph) {
 		this.graph = graph;
-		System.out.println("Intersections: " + graph.getIntersections().size());
-		System.out.println("Weights: " + graph.getWeightsMatrix().size());
-		System.out.println("Edges: " + graph.getAdjacencyMatrix().size());
+		Log.debug("Intersections: " + graph.getIntersections().size());
+		Log.debug("Weights: " + graph.getWeightsMatrix().size());
+		Log.debug("Edges: " + graph.getAdjacencyMatrix().size());
 	}
 
 	@Override
 	public LinkedList<IntersectionInterface> getPath(IntersectionInterface from, IntersectionInterface to) {
-		System.out.println("From:" + from.getId() + " To:" + to.getId());
+		Log.debug("From:" + from.getId() + " To:" + to.getId());
 
 		setShortestDistance(from.getId(), 0f);
 		unvisited.add(from.getId());

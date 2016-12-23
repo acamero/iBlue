@@ -16,6 +16,7 @@ import com.google.common.cache.LoadingCache;
 import com.iblue.model.TileCacheInterface;
 import com.iblue.model.TileContainerInterface;
 import com.iblue.model.db.dao.TileDAO;
+import com.iblue.utils.Log;
 import com.iblue.utils.Pair;
 
 public class GuavaCache implements TileCacheInterface {
@@ -37,7 +38,7 @@ public class GuavaCache implements TileCacheInterface {
 					@Override
 					public TileContainerInterface load(String cacheId) throws Exception {
 						TileDAO tileDAO = new TileDAO();
-						System.out.println("Load from db " + cacheId);
+						Log.debug("Load from db " + cacheId);
 						return tileDAO.getTile(decodeCacheId(cacheId));
 					}
 				});
@@ -58,7 +59,7 @@ public class GuavaCache implements TileCacheInterface {
 
 	protected Pair<Long, Long> decodeCacheId(String cacheId) {
 		String[] ids = cacheId.split(";");
-		System.out.println("Id decoded: " + ids[0] + " " + ids[1]);
+		Log.debug("Id decoded: " + ids[0] + " " + ids[1]);
 		return new Pair<Long, Long>(Long.valueOf(ids[0]), Long.valueOf(ids[1]));
 	}
 
@@ -76,10 +77,10 @@ public class GuavaCache implements TileCacheInterface {
 			Properties prop = new Properties();
 			prop.load(propFile);
 			cacheSize = Integer.valueOf(prop.getProperty("service.cache.size"));
-			System.out.println("Properties cache size=" + cacheSize);
+			Log.debug("Properties cache size=" + cacheSize);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Unable to load cache properties");
+			Log.debug("Unable to load cache properties");
 			cacheSize = 10;
 		} finally {
 			if (propFile != null) {

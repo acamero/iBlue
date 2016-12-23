@@ -8,13 +8,15 @@ import com.iblue.utils.Pair;
 
 public class TileHelper {
 
-	private static BigDecimal MULTIPLY_BY = new BigDecimal(10f);
-	private static BigDecimal ADD_TO_DECIMAL = new BigDecimal(0.1f);
+	private static BigDecimal MULTIPLY_BY_LAT = new BigDecimal(10f);
+	private static BigDecimal MULTIPLY_BY_LON = new BigDecimal(10f);
+	private static BigDecimal ADD_TO_DECIMAL_LAT = new BigDecimal(0.1f);
+	private static BigDecimal ADD_TO_DECIMAL_LON = new BigDecimal(0.1f);
 	
 
 	public static Pair<Long, Long> getTileId(BigDecimal lat, BigDecimal lon) {
-		Long idLat = lat.multiply(MULTIPLY_BY).longValue();
-		Long idLon = lon.multiply(MULTIPLY_BY).longValue();
+		Long idLat = lat.multiply(MULTIPLY_BY_LAT).longValue();
+		Long idLon = lon.multiply(MULTIPLY_BY_LON).longValue();
 		if(idLat<0l) {
 			idLat = idLat - 1l;
 		}
@@ -32,11 +34,11 @@ public class TileHelper {
 	 * @return
 	 */
 	public static Pair<Pair<BigDecimal, BigDecimal>, Pair<BigDecimal, BigDecimal>> getBounds(Pair<Long, Long> tileId) {
-		BigDecimal lat1 = new BigDecimal(tileId.getFirst()).divide(MULTIPLY_BY).setScale(2, BigDecimal.ROUND_HALF_DOWN);
-		BigDecimal lon1 = new BigDecimal(tileId.getSecond()).divide(MULTIPLY_BY).setScale(2,
+		BigDecimal lat1 = new BigDecimal(tileId.getFirst()).divide(MULTIPLY_BY_LAT).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+		BigDecimal lon1 = new BigDecimal(tileId.getSecond()).divide(MULTIPLY_BY_LON).setScale(2,
 				BigDecimal.ROUND_HALF_DOWN);
-		BigDecimal lat2 = lat1.add(ADD_TO_DECIMAL).setScale(2, BigDecimal.ROUND_HALF_DOWN);
-		BigDecimal lon2 = lon1.add(ADD_TO_DECIMAL).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+		BigDecimal lat2 = lat1.add(ADD_TO_DECIMAL_LAT).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+		BigDecimal lon2 = lon1.add(ADD_TO_DECIMAL_LON).setScale(2, BigDecimal.ROUND_HALF_DOWN);
 		Pair<BigDecimal, BigDecimal> latLon1 = new Pair<BigDecimal, BigDecimal>(lat1, lon1);
 		Pair<BigDecimal, BigDecimal> latLon2 = new Pair<BigDecimal, BigDecimal>(lat2, lon2);
 		return new Pair<Pair<BigDecimal, BigDecimal>, Pair<BigDecimal, BigDecimal>>(latLon1, latLon2);
@@ -56,9 +58,9 @@ public class TileHelper {
 		List<Pair<Long, Long>> tileIds = new ArrayList<Pair<Long, Long>>();
 
 		int latSteps = (int) ((latBounds.getSecond().floatValue() - latBounds.getFirst().floatValue())
-				/ ADD_TO_DECIMAL.floatValue()) + 1;
+				/ ADD_TO_DECIMAL_LAT.floatValue()) + 1;
 		int lonSteps = (int) ((lonBounds.getSecond().floatValue() - lonBounds.getFirst().floatValue())
-				/ ADD_TO_DECIMAL.floatValue()) + 1;
+				/ ADD_TO_DECIMAL_LON.floatValue()) + 1;
 
 		BigDecimal tempLat = latBounds.getFirst();//.subtract(ADD_TO_DECIMAL);
 		BigDecimal tempLon = lonBounds.getFirst();//.subtract(ADD_TO_DECIMAL);
@@ -69,9 +71,9 @@ public class TileHelper {
 					tileIds.add(p);
 					// System.out.println("Adding id" + p.getFirst()+" "+p.getSecond());
 				}
-				tempLon = tempLon.add(ADD_TO_DECIMAL);
+				tempLon = tempLon.add(ADD_TO_DECIMAL_LON);
 			}
-			tempLat = tempLat.add(ADD_TO_DECIMAL);
+			tempLat = tempLat.add(ADD_TO_DECIMAL_LAT);
 			tempLon = lonBounds.getFirst();
 		}
 

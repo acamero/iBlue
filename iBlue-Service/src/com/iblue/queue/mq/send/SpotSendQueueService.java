@@ -9,6 +9,7 @@ import com.iblue.model.SpotInterface;
 import com.iblue.queue.SpotSendQueueInterface;
 import com.iblue.queue.mq.QueueConfiguration;
 import com.iblue.queue.mq.QueueConnection;
+import com.iblue.utils.Log;
 import com.rabbitmq.client.Channel;
 
 
@@ -28,7 +29,7 @@ public class SpotSendQueueService implements SpotSendQueueInterface {
 			Channel channel = QueueConnection.getQueueConnection().getConnection().createChannel();
 			channel.queueDeclare(QueueConfiguration.SPOTS_QUEUE_NAME, false, false, false, null);
 			channel.basicPublish("", QueueConfiguration.SPOTS_QUEUE_NAME, null, spot.toString().getBytes());
-			// System.out.println(" [x] Sent '" + message + "'");
+			Log.debug("Sent '" + spot.toString() + "'");
 			channel.close();
 		} catch (IOException | TimeoutException e) {
 			e.printStackTrace();

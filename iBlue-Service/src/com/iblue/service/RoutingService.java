@@ -24,6 +24,7 @@ import com.iblue.model.db.service.TileService;
 import com.iblue.path.AlgorithmInterface;
 import com.iblue.path.Dijkstra;
 import com.iblue.path.GraphInterface;
+import com.iblue.utils.Log;
 
 @Path("/route")
 public class RoutingService {
@@ -44,17 +45,17 @@ public class RoutingService {
 		GeoStreetInterface stOrig = (GeoStreetInterface) stDao.getStreet(originId);
 		GeoStreetInterface stDest = (GeoStreetInterface) stDao.getStreet(destId);
 
-		System.out.println("Setting graph " + System.currentTimeMillis());
+		Log.debug("Setting graph " + System.currentTimeMillis());
 		TileServiceInterface serv = new TileService();
 		GraphInterface graph = serv.getTile(origin.getLatitude(), origin.getLongitude(), destination.getLatitude(),
 				destination.getLongitude());
 		alg.setGraph(graph);
 
-		System.out.println("Start routing " + System.currentTimeMillis());
+		Log.debug("Start routing " + System.currentTimeMillis());
 
 		LinkedList<IntersectionInterface> path = alg.getPath(stOrig.getFromIntersection(),
 				stDest.getFromIntersection());
-		System.out.println("Route found " + System.currentTimeMillis());
+		Log.debug("Route found " + System.currentTimeMillis());
 
 		return path;
 	}
@@ -64,7 +65,7 @@ public class RoutingService {
 	@Produces("application/json")
 	public Response getRoute(@PathParam("latitude1") float latitude1, @PathParam("longitude1") float longitude1,
 			@PathParam("latitude2") float latitude2, @PathParam("longitude2") float longitude2) throws JSONException {
-		System.out.println(
+		Log.info(
 				"Route from lat=" + latitude1 + " lon=" + longitude1 + " to lat=" + latitude2 + " lon=" + longitude2);
 
 		// TODO include algorithm parameters in the RQ
@@ -88,12 +89,13 @@ public class RoutingService {
 	public Response computeMap(@PathParam("key") String key) {
 		String resp = "{\"compute\":\"key error\"}";
 		if (key.equals("aq1sw2de3")) {
+			Log.info("Start recomputing tiles");
 			Thread computer = new Thread(new Runnable() {
 				public void run() {
-					System.out.println("Start computing in new trhread");;
+					Log.debug("Start computing in new trhread");;
 					TileServiceInterface service = new TileService();
 					String compResp = service.computeMap();
-					System.out.println("Finish computing "+ compResp);
+					Log.debug("Finish computing "+ compResp);
 				}
 			});
 			computer.start();

@@ -16,6 +16,7 @@ import com.iblue.model.ParkingAllocInterface;
 import com.iblue.model.StreetAvailabilityInterface;
 import com.iblue.model.db.service.ParkingAlloc;
 import com.iblue.model.msg.SpotJSON;
+import com.iblue.utils.Log;
 
 @Path("/map")
 public class MapService {
@@ -25,7 +26,7 @@ public class MapService {
 	@Produces("application/json")
 	public Response getActiveStreets(@PathParam("latitude") float latitude, @PathParam("longitude") float longitude)
 			throws JSONException {
-		System.out.println("Map availability lat=" + latitude + " lon=" + longitude);
+		Log.info("Map availability lat=" + latitude + " lon=" + longitude);
 
 		JSONArray jsonArray = new JSONArray();
 		ParkingAllocInterface alloc = new ParkingAlloc();
