@@ -94,7 +94,7 @@ public class RoutingService {
 				public void run() {
 					Log.debug("Start computing in new trhread");;
 					TileServiceInterface service = new TileService();
-					String compResp = service.computeMap();
+					String compResp = service.updateMap();
 					Log.debug("Finish computing "+ compResp);
 				}
 			});

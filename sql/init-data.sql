@@ -16,3 +16,5 @@ insert into `map_fdm`.`named_street_types` (str_named_street_type, str_descripti
 insert into `map_fdm`.`named_street_types` (str_named_street_type, str_description) values ('service', 'Vía de servicio');
 insert into `map_fdm`.`named_street_types` (str_named_street_type, str_description) values ('residential', 'Calle o avenida');
 
+insert into `map_fdm`.`tile_range` (pk_id, decimal_latitude_range, decimal_longitude_range) values (1,0.1,0.1);
+

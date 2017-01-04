@@ -3,7 +3,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
-    <property name="context-root" value="iBlue-Service"/>
     <property name="java-output-path" value="/target/classes"/>
+        <property name="context-root" value="service"/>
   </wb-module>
 </project-modules>

@@ -1,5 +1,7 @@
 package test.iblue.model.service;
 
+import static org.junit.Assert.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +12,14 @@ import org.junit.Test;
 
 import com.iblue.model.Tile;
 import com.iblue.model.db.TileContainer;
+import com.iblue.model.db.TileRange;
 import com.iblue.model.db.dao.TileDAO;
+import com.iblue.model.db.dao.TileRangeDAO;
 import com.iblue.model.db.service.TileHelper;
 import com.iblue.model.db.service.TileService;
+import com.iblue.utils.Log;
 import com.iblue.utils.Pair;
+import com.iblue.utils.Log.LogLevel;
 
 public class TileServiceTest {
 	private static BigDecimal lat, lon;
@@ -22,11 +28,12 @@ public class TileServiceTest {
 
 	@BeforeClass
 	public static void beforeClass() {
+		Log.setLogLevel(LogLevel.DEBUG);
 		lat = new BigDecimal(36.50f);
 		lon = new BigDecimal(-4.75f);
 		latTo = new BigDecimal(36.538671f);
 		lonTo = new BigDecimal(-4.625363f);
-		tileId = TileHelper.getTileId(lat, lon);
+		tileId = TileHelper.getInstance().getTileId(lat, lon);
 		// System.out.println("Tile id:" + tileId.getFirst() + " " +
 		// tileId.getSecond());
 	}
@@ -75,9 +82,9 @@ public class TileServiceTest {
 	}
 
 	@Test
-	public void computeMap() {
+	public void updateMap() {
 		TileService serv = new TileService();
-		serv.computeMap();
+		serv.updateMap();
 	}
 
 	public static String humanReadableByteCount(long bytes, boolean si) {
@@ -107,15 +114,42 @@ public class TileServiceTest {
 		Pair<BigDecimal, BigDecimal> latBounds, lonBounds;
 		latBounds = new Pair<BigDecimal, BigDecimal>(new BigDecimal(36.4717154f), new BigDecimal(36.8635631f));
 		lonBounds = new Pair<BigDecimal, BigDecimal>(new BigDecimal(-4.990535504f), new BigDecimal(-4.0402347f));
-		List<Pair<Long, Long>> ids = TileHelper.getBoundariesTileId(latBounds, lonBounds);
+		List<Pair<Long, Long>> ids = TileHelper.getInstance().getBoundariesTileId(latBounds, lonBounds);
 		for (Pair<Long, Long> id : ids) {
 			System.out.println("Id " + id.getFirst() + " " + id.getSecond());
 		}
 	}
 
 	@Test
-	public void test() {
-
+	public void computeMap05() {
+		BigDecimal latRange = new BigDecimal(0.5d);
+		BigDecimal lonRange = new BigDecimal(0.5d);
+		TileService serv = new TileService();
+		serv.computeMap(latRange, lonRange);
+	}
+	
+	@Test
+	public void noChange() {
+		TileRangeDAO dao = new TileRangeDAO();
+		TileRange range = dao.getTileRange();
+		TileService serv = new TileService();
+		assertEquals("No changes",serv.computeMap(range.getLatitudeRange(), range.getLongitudeRange()));
+	}
+	
+	@Test
+	public void computeMap01() {
+		BigDecimal latRange = new BigDecimal(0.1d);
+		BigDecimal lonRange = new BigDecimal(0.1d);
+		TileService serv = new TileService();
+		serv.computeMap(latRange, lonRange);
+	}
+	
+	@Test
+	public void computeMap() {
+		BigDecimal latRange = new BigDecimal(1.1219258d);
+		BigDecimal lonRange = new BigDecimal(4.9364468d);
+		TileService serv = new TileService();
+		serv.computeMap(latRange, lonRange);
 	}
 
 }

@@ -120,7 +120,7 @@ public class GeoStreetDAO extends MasterDAO implements StreetDAOInterface {
 		Query<GeoStreet> query = session.createQuery(
 				"from GeoStreet where status = 1 and routable = 1 and fromIntersection.latitude >= :lat1 and fromIntersection.latitude < :lat2 and fromIntersection.longitude >= :lon1 and fromIntersection.longitude < :lon2",
 				GeoStreet.class);
-		Pair<Pair<BigDecimal, BigDecimal>, Pair<BigDecimal, BigDecimal>> bounds = TileHelper.getBounds(tileId);
+		Pair<Pair<BigDecimal, BigDecimal>, Pair<BigDecimal, BigDecimal>> bounds = TileHelper.getInstance().getBounds(tileId);
 		Log.debug(
 				"Get GeoStreets lat>=" + bounds.getFirst().getFirst() + " and lat<" + bounds.getSecond().getFirst()
 						+ " lon>=" + bounds.getFirst().getSecond() + " lon<" + bounds.getSecond().getSecond());

@@ -11,19 +11,18 @@
 		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 
-		<property name="show_sql">true</property>
+		<property name="show_sql">false</property>
 
 		<property name="format_sql">true</property>
 		<property name="hbm2ddl.auto">validate</property>
 
 		<!-- connection pool -->
 		<property name="c3p0.min_size">5</property>
-		<property name="c3p0.max_size">20</property>
-		<property name="c3p0.timeout">1800</property>
-		<property name="c3p0.max_statements">50</property>
-		<!-- no "connection.pool_size" entry! -->
-		<!-- <property name="connection.pool_size">5</property> <property name="current_session_context_class">thread</property> -->
-
+		<property name="hibernate.c3p0.min_size">5</property>
+		<property name="hibernate.c3p0.max_size">20</property>
+		<property name="hibernate.c3p0.timeout">300</property>
+		<property name="hibernate.c3p0.max_statements">50</property>
+		<property name="hibernate.c3p0.idle_test_period">3000</property>
 
 		<mapping class="com.iblue.model.db.GeoStreet" />
 		<mapping class="com.iblue.model.db.GeoStreetWeight" />
@@ -33,7 +32,8 @@
 		<mapping class="com.iblue.model.db.Spot" />
 		<mapping class="com.iblue.model.db.StreetType" />
 		<mapping class="com.iblue.model.db.TileContainer" />
-		<mapping class="com.iblue.model.db.WeightedStreet" />		
+		<mapping class="com.iblue.model.db.TileRange" />
+		<mapping class="com.iblue.model.db.WeightedStreet" />
 		<mapping class="com.iblue.model.db.WeightType" />
 
 	</session-factory>

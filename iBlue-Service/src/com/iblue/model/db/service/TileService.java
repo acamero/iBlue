@@ -1,9 +1,16 @@
 package com.iblue.model.db.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -26,14 +33,49 @@ public class TileService implements TileServiceInterface {
 
 	private StreetDAOInterface streetDAO;
 	private TileDAO tileDAO;
+	private TileCacheInterface tileCache = loadTileCache();
+	
+
 
 	public TileService() {
 		streetDAO = new GeoStreetDAO();
-		tileDAO = new TileDAO();
+		tileDAO = new TileDAO();		
+	}
+
+	private static TileCacheInterface loadTileCache() {
+		ClassLoader classLoader = TileService.class.getClassLoader();
+		InputStream propFile = null;
+		TileCacheInterface cacheInterface = null;
+		try {
+			File file = new File(classLoader.getResource("service.properties").getFile());
+			propFile = new FileInputStream(file);
+			Properties prop = new Properties();
+			prop.load(propFile);
+			String cacheClass = prop.getProperty("service.cache.class");
+			Log.debug("Properties cache class=" + cacheClass);
+			Class<?> _class = Class.forName(cacheClass);
+			// retrieve the static method getInstance from the selected class
+			Method method = _class.getMethod("getInstance");
+			cacheInterface = (TileCacheInterface) method.invoke(null, new Object[] {});
+		} catch (IOException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException
+				| SecurityException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+			Log.debug("Unable to load cache properties");
+			cacheInterface = GuavaCache.getInstance();
+		} finally {
+			if (propFile != null) {
+				try {
+					propFile.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return cacheInterface;
 	}
 
 	public Tile buildTile(Pair<Long, Long> id) {
-		List<? extends GeoStreetInterface> streets = streetDAO.getTileBounded(id);
+		List<? extends GeoStreetInterface> streets = ((GeoStreetDAO)streetDAO).getTileBounded(id);
 		Tile tile = computeTile(streets);
 		return tile;
 	}
@@ -64,17 +106,16 @@ public class TileService implements TileServiceInterface {
 		return tile;
 	}
 
-	public String computeMap() {
-		GeoStreetDAO dao = new GeoStreetDAO();
-		Pair<BigDecimal, BigDecimal> latBounds = dao.getLatitudeBoundaries();
+	public String updateMap() {		
+		Pair<BigDecimal, BigDecimal> latBounds = ((GeoStreetDAO)streetDAO).getLatitudeBoundaries();
 		Log.debug("Lat min=" + latBounds.getFirst() + " max=" + latBounds.getSecond());
 
-		Pair<BigDecimal, BigDecimal> lonBounds = dao.getLongitudeBoundaries();
+		Pair<BigDecimal, BigDecimal> lonBounds = ((GeoStreetDAO)streetDAO).getLongitudeBoundaries();
 		Log.debug("Lon min=" + lonBounds.getFirst() + " max=" + lonBounds.getSecond());
 
 		int added = 0;
 		int updated = 0;
-		List<Pair<Long, Long>> tileIds = TileHelper.getBoundariesTileId(latBounds, lonBounds);
+		List<Pair<Long, Long>> tileIds = TileHelper.getInstance().getBoundariesTileId(latBounds, lonBounds);
 		for (Pair<Long, Long> id : tileIds) {
 			Log.debug("Build tile latId=" + id.getFirst() + " lonId=" + id.getSecond());
 			Tile tile = buildTile(id);
@@ -93,21 +134,33 @@ public class TileService implements TileServiceInterface {
 				updated++;
 			}
 		}
-		
+
 		return added + " tiles added and " + updated + " tiles updated";
 	}
+
+	public String computeMap(BigDecimal latRange, BigDecimal lonRange) {
+		// update TileHelper
+		if( TileHelper.getInstance().setRange(latRange, lonRange) ) {
+			Log.debug("Tile range changed");
+			// clear all tiles
+			tileDAO.deleteAll();
+			// and finally update the map
+			return updateMap();
+		}
+		Log.debug("No changes to tile range");
+		return "No changes";
+	}
 	
-	public String computeMapWithNewTileDef(BigDecimal latRange, BigDecimal lonRange) {
-		return computeMap();
+	public Pair<BigDecimal,BigDecimal> getRange() {
+		return TileHelper.getInstance().getRange();
 	}
 
 	public Tile getTile(BigDecimal latFrom, BigDecimal lonFrom, BigDecimal latTo, BigDecimal lonTo) {
-		
-		List<Pair<Long, Long>> tileIds = TileHelper.getListTileId(latFrom, lonFrom, latTo, lonTo);
-		TileCacheInterface tileCache = GuavaCache.getInstance();
+
+		List<Pair<Long, Long>> tileIds = TileHelper.getInstance().getListTileId(latFrom, lonFrom, latTo, lonTo);
 		@SuppressWarnings("unchecked")
-		List<TileContainerInterface> tileConts = (List<TileContainerInterface>)tileCache.getTiles(tileIds);
-		
+		List<TileContainerInterface> tileConts = (List<TileContainerInterface>) tileCache.getTiles(tileIds);
+
 		// System.out.println("Tiles number " + tileConts.size());
 		Tile tile = new Tile();
 		tile.setAdjacencyMatrix(HashBasedTable.create());

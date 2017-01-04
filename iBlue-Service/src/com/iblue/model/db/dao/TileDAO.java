@@ -56,4 +56,12 @@ public class TileDAO extends MasterDAO {
 		
 		return tileConts;
 	}
+	
+	public void deleteAll() {
+		String stringQuery = "delete from TileContainer";
+		openTx();
+		Query<?> query = session.createQuery(stringQuery);
+		query.executeUpdate();
+		closeTx();
+	}
 }

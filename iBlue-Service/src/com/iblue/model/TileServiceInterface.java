@@ -6,6 +6,6 @@ public interface TileServiceInterface {
 
 	public Tile getTile(BigDecimal latFrom, BigDecimal lonFrom, BigDecimal latTo, BigDecimal lonTo);
 
-	public String computeMap();
+	public String updateMap();
 
 }

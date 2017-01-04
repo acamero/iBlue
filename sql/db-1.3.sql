@@ -167,6 +167,17 @@ CREATE TABLE `map_fdm`.`tile_container` (
   PRIMARY KEY (`pk_latitude_id`,`pk_longitude_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
+-- tiles range
+DROP TABLE IF EXISTS `map_fdm`.`tile_range`;
+CREATE TABLE `map_fdm`.`tile_range` (
+  `pk_id` bigint(20) NOT NULL,
+  `decimal_latitude_range` decimal(10,7) NOT NULL,
+  `decimal_longitude_range` decimal(10,7) NOT NULL,
+  `ts_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ts_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`pk_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
 -- ------------------------------------------------------------------
 -- Pre compute calculations on geo_street new or updated record
 

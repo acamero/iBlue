@@ -145,6 +145,12 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		
 
 		<!-- Rabbit -->
 		<dependency>
@@ -153,12 +159,8 @@
 			<version>${rabbitmq.version}</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/c3p0/c3p0 -->
-		<dependency>
-			<groupId>com.mchange</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>${c3p0.version}</version>
-		</dependency>
+
+
 
 		<!-- iBlue Core <dependency> <groupId>com.iblue</groupId> <artifactId>iBlue-Core</artifactId> 
 			<version>${iblue.core.version}</version> </dependency> -->
