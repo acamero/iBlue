@@ -90,10 +90,12 @@ for way_id in ways_dir:
 
     # if the street begins in a dead end (also add the node to the file)
     if not ways_dir[way_id][0] in temp:
-        temp.insert(0,ways_dir[way_id][0])        
+        temp.insert(0,ways_dir[way_id][0]) 
+        intersections_list.append(ways_dir[way_id][0])      
     # or ends in a dead end (also add the node to the file)
     if not ways_dir[way_id][-1] in temp:
-        temp.append(ways_dir[way_id][-1])        
+        temp.append(ways_dir[way_id][-1])
+        intersections_list.append(ways_dir[way_id][-1])       
 
     # if oneway is -1, then reverse node order
     if oneway_dir[way_id] == -1:

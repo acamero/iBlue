@@ -14,7 +14,7 @@ public abstract class MasterDAO {
 	}
 
 	protected void closeTx() {
-		session.getTransaction().commit();
+		session.getTransaction().commit();		
 		session.close();
 	}
 	

@@ -100,7 +100,7 @@ public class Dijkstra implements AlgorithmInterface {
 		Long step = target;
 		// check if a path exists
 		if (predecessors.get(step) == null) {
-			System.out.println("No path found");
+			Log.debug("No path found");
 			return path;
 		}
 		path.add(graph.getIntersections().get(step));

@@ -154,6 +154,7 @@ public class GeoStreetDAO extends MasterDAO implements StreetDAOInterface {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		closeTx();
 		return bounds;
 	}
 
@@ -169,6 +170,7 @@ public class GeoStreetDAO extends MasterDAO implements StreetDAOInterface {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		closeTx();
 		return bounds;
 	}
 
