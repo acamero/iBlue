@@ -18,6 +18,7 @@ lanes_backward_dir = {}
 lanes_forward_dir = {}
 names_dir = {}
 names_ref_dir = {}
+street_type_dir = {}
 
 graph_file = open(graph_xml_name, "w")
 weights_file = open(weights_xml_name, "w")
@@ -38,7 +39,8 @@ for way in osm.iter('way'):
     for tag in way.iter('tag'):
         if tag.get('k') == 'highway':
             if tag.get('v') in ['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'service','motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'living_street']:   
-                oneway_dir[id_way] = 0     
+                oneway_dir[id_way] = 0    
+                street_type_dir[id_way] = tag.get('v') 
                 for nd in way.iter('nd'):
                     ref = nd.get('ref')
                     nodes_ref_list.append(ref)
@@ -108,7 +110,7 @@ for way_id in ways_dir:
     # way_id, node_id_from, node_id_to, one_way_ind, no_lanes, lanes_backward, lanes_forward, routable
     if len(temp) > 1:
         for i in range(len(temp)-1):
-            graph_file.write('\t\t<arc arcid=\'' + str(arcid) + '\' from=\'' + str(temp[i]) + '\' to=\'' + str(temp[i+1]) + '\' logid=\'' + str(way_id) + '\' lanes=\'' + lanes_forw + '\'' + ' />\n')
+            graph_file.write('\t\t<arc arcid=\'' + str(arcid) + '\' from=\'' + str(temp[i]) + '\' to=\'' + str(temp[i+1]) + '\' logid=\'' + str(way_id) + '\' lanes=\'' + lanes_forw + '\' type=\'' + street_type_dir[way_id] + '\'' + ' />\n')
             lat1, lon1 = nodes[temp[i]]
             easting1, northing1, zone1, letter1 = utm.from_latlon(float(lat1),float(lon1))
             lat2, lon2 = nodes[temp[i+1]]
@@ -117,7 +119,7 @@ for way_id in ways_dir:
             weights_file.write('\t<weight arcid=\'' + str(arcid) + '\' value=\'' + str(w) + '\' type=\'distance\' />\n')
             if abs(oneway_dir[way_id]) == 0 :
                 arcid = arcid + 1
-                graph_file.write('\t\t<arc arcid=\'' + str(arcid) + '\' from=\'' + str(temp[i+1]) + '\' to=\'' + str(temp[i]) + '\' logid=\'' + str(way_id) + '\' lanes=\'' + lanes_back + '\'' + ' />\n')
+                graph_file.write('\t\t<arc arcid=\'' + str(arcid) + '\' from=\'' + str(temp[i+1]) + '\' to=\'' + str(temp[i]) + '\' logid=\'' + str(way_id) + '\' lanes=\'' + lanes_back + '\' type=\'' + street_type_dir[way_id] + '\'' + ' />\n')
                 weights_file.write('\t<weight arcid=\'' + str(arcid) + '\' value=\'' + str(w) + '\' type=\'distance\' />\n')
             arcid = arcid + 1 
         # end for
