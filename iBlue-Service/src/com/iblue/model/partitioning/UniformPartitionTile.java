@@ -1,61 +1,26 @@
-package com.iblue.model.db.service;
+package com.iblue.model.partitioning;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iblue.model.db.TileRange;
-import com.iblue.model.db.dao.TileRangeDAO;
 import com.iblue.utils.Log;
 import com.iblue.utils.Pair;
 
-public class TileHelper {
+public class UniformPartitionTile implements PartitionTileInterface {
 
-	private static TileHelper INSTANCE = buildInstance();
 	protected static final int LAT_LON_SCALE = 7;
 	private BigDecimal rangeLat;
 	private BigDecimal rangeLon;
 
-	private static TileHelper buildInstance() {
-		TileRangeDAO dao = new TileRangeDAO();
-		TileRange range = dao.getTileRange();
-		return new TileHelper(range.getLatitudeRange(),range.getLongitudeRange());
-	}
-
-	public static TileHelper getInstance() {
-		return INSTANCE;
-	}
-
-	private TileHelper(BigDecimal latRange, BigDecimal lonRange) {
-		setRange(latRange, lonRange);
-
-	}
-
-	public boolean setRange(BigDecimal latRange, BigDecimal lonRange) {
-		BigDecimal tempLat = latRange.setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN);
-		BigDecimal tempLon = lonRange.setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN);
-		if(tempLat.equals(rangeLat) && tempLon.equals(rangeLon)) {
-			return false;
-		}
+	protected UniformPartitionTile(BigDecimal latRange, BigDecimal lonRange) {
 		rangeLat = latRange.setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN);
 		rangeLon = lonRange.setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN);
-		Log.debug("Range latitude=" + rangeLat + " longitude=" + rangeLon);
-		
-		TileRangeDAO dao = new TileRangeDAO();
-		TileRange range = dao.getTileRange();
-		range.setLatitudeRange(rangeLat);
-		range.setLongitudeRange(rangeLon);
-		dao.update(range);
-		return true;
 	}
-	
-	public Pair<BigDecimal,BigDecimal> getRange() {
-		return new Pair<BigDecimal,BigDecimal>(rangeLat,rangeLon);
-	}
-	
+
 
 	/**
-	 * Given a coordinate, generate the correspondent tile id
+	 * Given a coordinate, returns the correspondent tile id
 	 * 
 	 * @param lat
 	 * @param lon
@@ -69,7 +34,8 @@ public class TileHelper {
 	}
 
 	/**
-	 * <Lat1,Lon1>,<Lat2,Lon2>
+	 * Returns the latitude and longitude boundaries of the region covered by
+	 * the given tile <Lat1,Lon1>,<Lat2,Lon2>
 	 * 
 	 * @param tileId
 	 * @return
@@ -86,6 +52,16 @@ public class TileHelper {
 		return new Pair<Pair<BigDecimal, BigDecimal>, Pair<BigDecimal, BigDecimal>>(latLon1, latLon2);
 	}
 
+	/**
+	 * Returns the list of tiles needed for computing the P2PSP from the two
+	 * points (from and to)
+	 * 
+	 * @param latFrom
+	 * @param lonFrom
+	 * @param latTo
+	 * @param lonTo
+	 * @return
+	 */
 	public List<Pair<Long, Long>> getListTileId(BigDecimal latFrom, BigDecimal lonFrom, BigDecimal latTo,
 			BigDecimal lonTo) {
 		Pair<BigDecimal, BigDecimal> latBounds = new Pair<BigDecimal, BigDecimal>(latFrom.min(latTo),
@@ -97,6 +73,8 @@ public class TileHelper {
 	}
 
 	/**
+	 * Returns the list of tiles (ids) that partitions the region described
+	 * by the input when partitioned by the actual size of the partition
 	 * 
 	 * @param latBounds
 	 * @param lonBounds
@@ -131,11 +109,14 @@ public class TileHelper {
 		return tileIds;
 	}
 
-	/*
-	 * private int getNumberOfDecimalPlaces(BigDecimal bigDecimal) { String
-	 * string = bigDecimal.stripTrailingZeros().toPlainString(); int index =
-	 * string.indexOf("."); return index < 0 ? 0 : string.length() - index - 1;
-	 * }
-	 */
 
+	@Override
+	public Pair<List<BigDecimal>, List<BigDecimal>> getRanges() {
+		List<BigDecimal> latRanges = new ArrayList<BigDecimal>();
+		List<BigDecimal> lonRanges = new ArrayList<BigDecimal>();
+		latRanges.add(rangeLat);
+		lonRanges.add(rangeLon);
+		
+		return new Pair<List<BigDecimal>,List<BigDecimal>>(latRanges,lonRanges);
+	}
 }

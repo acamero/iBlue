@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import com.iblue.model.GeoStreetWeightInterface;
 import com.iblue.model.db.TileContainer;
 import com.iblue.model.db.dao.GeoStreetDAO;
 import com.iblue.model.db.dao.TileDAO;
+import com.iblue.model.partitioning.TileHelper;
 import com.iblue.utils.Log;
 import com.iblue.utils.Pair;
 
@@ -34,14 +36,17 @@ public class TileService implements TileServiceInterface {
 	private StreetDAOInterface streetDAO;
 	private TileDAO tileDAO;
 	private TileCacheInterface tileCache = loadTileCache();
-	
-
 
 	public TileService() {
 		streetDAO = new GeoStreetDAO();
-		tileDAO = new TileDAO();		
+		tileDAO = new TileDAO();
 	}
 
+	/**
+	 * Load the class that implements the cache interface
+	 * 
+	 * @return
+	 */
 	private static TileCacheInterface loadTileCache() {
 		ClassLoader classLoader = TileService.class.getClassLoader();
 		InputStream propFile = null;
@@ -74,12 +79,25 @@ public class TileService implements TileServiceInterface {
 		return cacheInterface;
 	}
 
+	/**
+	 * Compute the tile for the given tile id (uses the tile partitioning for
+	 * selecting the region to be included)
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public Tile buildTile(Pair<Long, Long> id) {
-		List<? extends GeoStreetInterface> streets = ((GeoStreetDAO)streetDAO).getTileBounded(id);
+		List<? extends GeoStreetInterface> streets = ((GeoStreetDAO) streetDAO).getTileBounded(id);
 		Tile tile = computeTile(streets);
 		return tile;
 	}
 
+	/**
+	 * Compute the tile for the given list of streets
+	 * 
+	 * @param streets
+	 * @return
+	 */
 	private Tile computeTile(List<? extends GeoStreetInterface> streets) {
 		Table<Long, Long, Long> adjacencyMatrix = HashBasedTable.create();
 		Map<Long, IntersectionInterface> intersections = new HashMap<Long, IntersectionInterface>();
@@ -106,11 +124,14 @@ public class TileService implements TileServiceInterface {
 		return tile;
 	}
 
-	public String updateMap() {		
-		Pair<BigDecimal, BigDecimal> latBounds = ((GeoStreetDAO)streetDAO).getLatitudeBoundaries();
+	/**
+	 * Recompute the tile map with the actual partitioning values
+	 */
+	public String updateMap() {
+		Pair<BigDecimal, BigDecimal> latBounds = ((GeoStreetDAO) streetDAO).getLatitudeBoundaries();
 		Log.debug("Lat min=" + latBounds.getFirst() + " max=" + latBounds.getSecond());
 
-		Pair<BigDecimal, BigDecimal> lonBounds = ((GeoStreetDAO)streetDAO).getLongitudeBoundaries();
+		Pair<BigDecimal, BigDecimal> lonBounds = ((GeoStreetDAO) streetDAO).getLongitudeBoundaries();
 		Log.debug("Lon min=" + lonBounds.getFirst() + " max=" + lonBounds.getSecond());
 
 		int added = 0;
@@ -138,9 +159,15 @@ public class TileService implements TileServiceInterface {
 		return added + " tiles added and " + updated + " tiles updated";
 	}
 
-	public String computeMap(BigDecimal latRange, BigDecimal lonRange) {
+	/**
+	 * Set the tile partitioning size and update the tile map
+	 * @param latRanges
+	 * @param lonRanges
+	 * @return
+	 */
+	public String computeMap(List<BigDecimal> latRanges, List<BigDecimal> lonRanges) {
 		// update TileHelper
-		if( TileHelper.getInstance().setRange(latRange, lonRange) ) {
+		if (TileHelper.updateConfiguration(latRanges, lonRanges)) {
 			Log.debug("Tile range changed");
 			// clear all tiles
 			tileDAO.deleteAll();
@@ -150,11 +177,26 @@ public class TileService implements TileServiceInterface {
 		Log.debug("No changes to tile range");
 		return "No changes";
 	}
-	
-	public Pair<BigDecimal,BigDecimal> getRange() {
-		return TileHelper.getInstance().getRange();
+
+	/**
+	 * Set the tile partitioning size and update the tile map
+	 * @param latRange
+	 * @param lonRange
+	 * @return
+	 */
+	public String computeMap(BigDecimal latRange, BigDecimal lonRange) {
+		List<BigDecimal> latRanges = new ArrayList<BigDecimal>();
+		List<BigDecimal> lonRanges = new ArrayList<BigDecimal>();
+		latRanges.add(latRange);
+		lonRanges.add(lonRange);
+
+		return computeMap(latRanges,lonRanges);
 	}
 
+	/**
+	 * Get the tile (or group of tiles unified into a new tile) needed for
+	 * computing P2PSP from "from" to "to"
+	 */
 	public Tile getTile(BigDecimal latFrom, BigDecimal lonFrom, BigDecimal latTo, BigDecimal lonTo) {
 
 		List<Pair<Long, Long>> tileIds = TileHelper.getInstance().getListTileId(latFrom, lonFrom, latTo, lonTo);
@@ -178,6 +220,10 @@ public class TileService implements TileServiceInterface {
 		}
 
 		return tile;
+	}
+	
+	public Pair<List<BigDecimal>,List<BigDecimal>> getRanges() {
+		return TileHelper.getInstance().getRanges();
 	}
 
 }

@@ -9,7 +9,7 @@ import com.iblue.model.StreetDAOInterface;
 import com.iblue.model.SimpleStreetInterface;
 import com.iblue.model.db.GeoStreet;
 import com.iblue.model.db.Intersection;
-import com.iblue.model.db.service.TileHelper;
+import com.iblue.model.partitioning.TileHelper;
 import com.iblue.utils.Log;
 import com.iblue.utils.Pair;
 

@@ -15,8 +15,8 @@ import com.iblue.model.db.TileContainer;
 import com.iblue.model.db.TileRange;
 import com.iblue.model.db.dao.TileDAO;
 import com.iblue.model.db.dao.TileRangeDAO;
-import com.iblue.model.db.service.TileHelper;
 import com.iblue.model.db.service.TileService;
+import com.iblue.model.partitioning.TileHelper;
 import com.iblue.utils.Log;
 import com.iblue.utils.Pair;
 import com.iblue.utils.Log.LogLevel;
@@ -145,9 +145,17 @@ public class TileServiceTest {
 	}
 	
 	@Test
-	public void computeMap() {
-		BigDecimal latRange = new BigDecimal(1.1219258d);
-		BigDecimal lonRange = new BigDecimal(4.9364468d);
+	public void computeOptimalMap() {
+		BigDecimal latRange = new BigDecimal(0.2372263d);
+		BigDecimal lonRange = new BigDecimal(0.0289512d);
+		TileService serv = new TileService();
+		serv.computeMap(latRange, lonRange);
+	}
+	
+	@Test
+	public void computeMap10() {
+		BigDecimal latRange = new BigDecimal(10.0d);
+		BigDecimal lonRange = new BigDecimal(10.0d);
 		TileService serv = new TileService();
 		serv.computeMap(latRange, lonRange);
 	}

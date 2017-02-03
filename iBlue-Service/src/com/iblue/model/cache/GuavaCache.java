@@ -32,6 +32,7 @@ public class GuavaCache implements TileCacheInterface {
 
 	private GuavaCache() {
 		loadProperties();
+		Log.info("Guava Cache set (size=" + cacheSize + ")");
 		cache = CacheBuilder.newBuilder().maximumSize(cacheSize).expireAfterAccess(30, TimeUnit.MINUTES)
 				.build(new CacheLoader<String, TileContainerInterface>() {
 

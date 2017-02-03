@@ -37,7 +37,7 @@ public class RoutingServiceTest {
 
 	@BeforeClass
 	public static void init() throws NumberFormatException, IOException {
-		Log.setLogLevel(LogLevel.DEBUG);
+		Log.setLogLevel(LogLevel.INFO);
 
 		FileReader fr = new FileReader("spots-malaga.txt");
 		BufferedReader br = new BufferedReader(fr);
@@ -98,9 +98,8 @@ public class RoutingServiceTest {
 	@Test
 	public void full() {
 		TileService tileService = new TileService();
-		long aggTime = 0l;
-		long aggTimeReal = 0l;
-		long aggTimeSearch = 0l;
+		long aggFitnessTime = 0l;
+		
 		for (int i = 0; i < pairs.size(); i++) {
 			Pair<GeoStreetInterface, GeoStreetInterface> p = pairs.get(i);
 			Log.debug("Setting graph " + System.currentTimeMillis());
@@ -110,25 +109,31 @@ public class RoutingServiceTest {
 			AlgorithmInterface alg = new Dijkstra();
 			alg.setGraph(graph);
 
-			long beginSearch = System.currentTimeMillis();
+			//long beginSearch = System.currentTimeMillis();
 			LinkedList<IntersectionInterface> path = alg.getPath(p.getFirst().getFromIntersection(),
 					p.getSecond().getFromIntersection());
 			long end = System.currentTimeMillis();
 			long time = end - begin;
-			long timeSearch = end -beginSearch;
+			// long searchTime = end - beginSearch;
+			long fitnessTime = time;
+
 			boolean found = !path.isEmpty();
 			if (!found) {
-				aggTime += 2000l;
+				fitnessTime += 20000;
 			}
+			aggFitnessTime += fitnessTime;
 			Log.debug("Route " + i + " time " + time + " found " + found);
-
-			aggTimeReal += time;
-			aggTime += time;
-			aggTimeSearch += timeSearch;
+						
 		}
-		Log.debug("Agg time: " + aggTime);
-		Log.debug("Agg time real: " + aggTimeReal);
-		Log.debug("Agg time search: " + aggTimeSearch);
+		
+		//Log.info("Fitness time: " + aggFitnessTime);
+		Log.info("Avg Fitness:" + (double) (aggFitnessTime / pairs.size()));
 	}
 
+	@Test
+	public void full2() {
+		for(int i=0;i<31;i++) {
+			full();		
+		}
+	}
 }
