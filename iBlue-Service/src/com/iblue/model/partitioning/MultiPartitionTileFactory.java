@@ -31,7 +31,7 @@ public class MultiPartitionTileFactory implements PartitionFactoryInterface {
 		}
 
 		Pair<List<BigDecimal>, List<BigDecimal>> pRanges = dbToRanges(ranges);
-		
+
 		GeoStreetDAO streetDAO = new GeoStreetDAO();
 		Pair<BigDecimal, BigDecimal> latBounds = streetDAO.getLatitudeBoundaries();
 		Log.debug("Lat min=" + latBounds.getFirst() + " max=" + latBounds.getSecond());
@@ -58,8 +58,20 @@ public class MultiPartitionTileFactory implements PartitionFactoryInterface {
 
 	public MultiPartitionTile loadFromConfiguration(List<BigDecimal> latRanges, List<BigDecimal> lonRanges,
 			Pair<BigDecimal, BigDecimal> latBounds, Pair<BigDecimal, BigDecimal> lonBounds) {
+				
+		if(latRanges.isEmpty()) {
+			Log.warning("Adding default latitude partition (0)");
+			latRanges.add(new BigDecimal(0));
+		}
+		
+		if(lonRanges.isEmpty()) {
+			Log.warning("Adding default longitude partition (0)");
+			lonRanges.add(new BigDecimal(0));
+		}
+		
 		Pair<List<BigDecimal>, List<BigDecimal>> ranges = new Pair<List<BigDecimal>, List<BigDecimal>>(latRanges,
 				lonRanges);
+		
 		return new MultiPartitionTile(ranges, latBounds, lonBounds);
 	}
 
@@ -88,10 +100,21 @@ public class MultiPartitionTileFactory implements PartitionFactoryInterface {
 	}
 
 	private Pair<List<BigDecimal>, List<BigDecimal>> dbToRanges(List<TileRange> ranges) {
+		List<BigDecimal> latRanges = new ArrayList<BigDecimal>();
+		List<BigDecimal> lonRanges = new ArrayList<BigDecimal>();
 		// sort by id
 		Collections.sort(ranges, new TileRangeComparator());
-
-		return null;
+		for (int i=0;i<ranges.size();i++) {
+			if(ranges.get(i).getLatitudeRange().compareTo(DEFAULT_NULL_BD)==0) {
+				lonRanges.add(ranges.get(i).getLongitudeRange());
+				Log.debug("Lon range added: "+ranges.get(i).getLongitudeRange());
+			} else {
+				latRanges.add(ranges.get(i).getLatitudeRange());
+				Log.debug("Lat range added: "+ranges.get(i).getLatitudeRange());
+			}
+		}
+		
+		return new Pair<List<BigDecimal>, List<BigDecimal>>(latRanges, lonRanges);
 	}
 
 	private class TileRangeComparator implements Comparator<TileRange> {

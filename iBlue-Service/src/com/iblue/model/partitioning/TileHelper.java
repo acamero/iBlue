@@ -1,13 +1,12 @@
 package com.iblue.model.partitioning;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Properties;
 
+import com.iblue.model.db.dao.GeoStreetDAO;
 import com.iblue.model.db.service.TileService;
 import com.iblue.utils.Log;
 import com.iblue.utils.Pair;
@@ -18,18 +17,26 @@ public class TileHelper {
 	private static PartitionFactoryInterface FACTORY = getFactory();
 
 	private static PartitionFactoryInterface getFactory() {
-		ClassLoader classLoader = TileService.class.getClassLoader();
+		ClassLoader classLoader = TileHelper.class.getClassLoader();
 		InputStream propFile = null;
 		PartitionFactoryInterface factory = null;
+		boolean reload = false;
 		try {
-			File file = new File(classLoader.getResource("service.properties").getFile());
-			propFile = new FileInputStream(file);
+			// File file = new File(classLoader.getResource("service.properties").getFile());
+			propFile = classLoader.getResourceAsStream("service.properties");
 			Properties prop = new Properties();
 			prop.load(propFile);
+			// select the type of partition
 			String partitioningClass = prop.getProperty("service.partitioning.factory.class");
 			Log.debug("Properties cache class=" + partitioningClass);
-			Class<?> _class = Class.forName(partitioningClass);			
-			factory = (PartitionFactoryInterface) _class.newInstance();			
+			Class<?> _class = Class.forName(partitioningClass);
+			factory = (PartitionFactoryInterface) _class.newInstance();
+			// select user option to enforce partition processing on startup
+			String reloadStr = prop.getProperty("service.partitioning.reload");
+			Log.debug("Properties partitioning reprocessing=" + reloadStr);
+			if (reloadStr.equals("true")) {
+				reload = true;
+			}
 		} catch (IOException | IllegalAccessException | ClassNotFoundException | SecurityException
 				| IllegalArgumentException | InstantiationException e) {
 			e.printStackTrace();
@@ -47,6 +54,20 @@ public class TileHelper {
 		}
 
 		INSTANCE = factory.loadFromDb();
+
+		// re-compute the tile map
+		if (reload) {
+			Log.info("Re-computing the tile map on startup");
+			GeoStreetDAO streetDAO = new GeoStreetDAO();
+			Pair<BigDecimal, BigDecimal> latBounds = streetDAO.getLatitudeBoundaries();
+			Log.debug("Lat min=" + latBounds.getFirst() + " max=" + latBounds.getSecond());
+			Pair<BigDecimal, BigDecimal> lonBounds = streetDAO.getLongitudeBoundaries();
+			Log.debug("Lon min=" + lonBounds.getFirst() + " max=" + lonBounds.getSecond());
+			List<Pair<Long, Long>> tileIds = INSTANCE.getBoundariesTileId(latBounds, lonBounds);
+			TileService serv = new TileService();
+			serv.updateMap(tileIds);
+		}
+
 		return factory;
 	}
 
@@ -67,26 +88,26 @@ public class TileHelper {
 		if (ranges.getFirst().size() != latRanges.size()) {
 			hasChanged = true;
 			Log.debug("Different latitude range size");
+		} else {
+			for (int i = 0; i < ranges.getFirst().size(); i++) {
+				if (ranges.getFirst().get(i).compareTo(
+						latRanges.get(i).setScale(ranges.getFirst().get(i).scale(), BigDecimal.ROUND_HALF_DOWN)) != 0) {
+					hasChanged = true;
+					Log.debug("Different latitude range " + latRanges.get(i) + " " + ranges.getFirst().get(i));
+				}
+			}
 		}
 
 		if (ranges.getSecond().size() != lonRanges.size()) {
 			hasChanged = true;
 			Log.debug("Different longitude range size");
-		}
-
-		for (int i = 0; i < ranges.getFirst().size(); i++) {
-			if (ranges.getFirst().get(i).compareTo(
-					latRanges.get(i).setScale(ranges.getFirst().get(i).scale(), BigDecimal.ROUND_HALF_DOWN)) != 0) {
-				hasChanged = true;
-				Log.debug("Different latitude range " + latRanges.get(i) + " " + ranges.getFirst().get(i));
-			}
-		}
-
-		for (int i = 0; i < ranges.getSecond().size(); i++) {
-			if (ranges.getSecond().get(i).compareTo(
-					lonRanges.get(i).setScale(ranges.getSecond().get(i).scale(), BigDecimal.ROUND_HALF_DOWN)) != 0) {
-				hasChanged = true;
-				Log.debug("Different latitude range " + lonRanges.get(i) + " " + ranges.getSecond().get(i));
+		} else {
+			for (int i = 0; i < ranges.getSecond().size(); i++) {
+				if (ranges.getSecond().get(i).compareTo(lonRanges.get(i).setScale(ranges.getSecond().get(i).scale(),
+						BigDecimal.ROUND_HALF_DOWN)) != 0) {
+					hasChanged = true;
+					Log.debug("Different longitude range " + lonRanges.get(i) + " " + ranges.getSecond().get(i));
+				}
 			}
 		}
 

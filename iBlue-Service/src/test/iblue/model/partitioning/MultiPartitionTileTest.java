@@ -167,4 +167,28 @@ public class MultiPartitionTileTest {
 		assertEquals(2l, tileId.getFirst().longValue());
 		assertEquals(2l, tileId.getSecond().longValue());
 	}
+	
+	@Test
+	public void oneByZero() {
+		List<BigDecimal> latRanges = new ArrayList<BigDecimal>();
+		List<BigDecimal> lonRanges = new ArrayList<BigDecimal>();
+
+		// Latitude sizes
+		latRanges.add(new BigDecimal(2));
+		// No longitude sizes
+
+		MultiPartitionTile mpt = factory.loadFromConfiguration(latRanges, lonRanges, latBoundaries, lonBoundaries);
+		
+		Pair<Long, Long> tileId = mpt.getTileId(new BigDecimal(0), new BigDecimal(0));
+		assertEquals(0l, tileId.getFirst().longValue());
+		assertEquals(1l, tileId.getSecond().longValue());
+		
+		tileId = mpt.getTileId(new BigDecimal(3), new BigDecimal(0));
+		assertEquals(1l, tileId.getFirst().longValue());
+		assertEquals(1l, tileId.getSecond().longValue());
+		
+		tileId = mpt.getTileId(new BigDecimal(3), new BigDecimal(2));
+		assertEquals(1l, tileId.getFirst().longValue());
+		assertEquals(1l, tileId.getSecond().longValue());
+	}
 }

@@ -53,13 +53,13 @@ public class MultiPartitionTile implements PartitionTileInterface {
 			temp = Range.closedOpen(mark,
 					mark.add(ranges.getSecond().get(i).setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN)));
 			lonRanges.add(temp);
-			Log.debug("Lat range parittion added "+temp.toString());
+			Log.debug("Lon range parittion added "+temp.toString());
 			mark = mark.add(ranges.getSecond().get(i).setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN));
 		}
 
 		temp = Range.atLeast(mark);
 		lonRanges.add(temp);
-		Log.debug("Lat range parittion added "+temp.toString());
+		Log.debug("Lon range parittion added "+temp.toString());
 
 	}
 

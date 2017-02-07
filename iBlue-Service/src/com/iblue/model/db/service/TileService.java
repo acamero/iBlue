@@ -1,7 +1,6 @@
 package com.iblue.model.db.service;
 
-import java.io.File;
-import java.io.FileInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -52,8 +51,9 @@ public class TileService implements TileServiceInterface {
 		InputStream propFile = null;
 		TileCacheInterface cacheInterface = null;
 		try {
-			File file = new File(classLoader.getResource("service.properties").getFile());
-			propFile = new FileInputStream(file);
+			//File file = new File(classLoader.getResource("/service.properties").getFile());
+			//propFile = new FileInputStream(file);
+			propFile = classLoader.getResourceAsStream("service.properties");
 			Properties prop = new Properties();
 			prop.load(propFile);
 			String cacheClass = prop.getProperty("service.cache.class");
@@ -134,9 +134,33 @@ public class TileService implements TileServiceInterface {
 		Pair<BigDecimal, BigDecimal> lonBounds = ((GeoStreetDAO) streetDAO).getLongitudeBoundaries();
 		Log.debug("Lon min=" + lonBounds.getFirst() + " max=" + lonBounds.getSecond());
 
+		List<Pair<Long, Long>> tileIds = TileHelper.getInstance().getBoundariesTileId(latBounds, lonBounds);
+		return updateMap(tileIds);
+	}
+	
+	
+	/**
+	 * <lat1,lat2>, <lon1,lon2>
+	 * @return
+	 */
+	public Pair<Pair<BigDecimal,BigDecimal>,Pair<BigDecimal,BigDecimal>> getMapBoundaries() {
+		Pair<BigDecimal, BigDecimal> latBounds = ((GeoStreetDAO) streetDAO).getLatitudeBoundaries();
+		Log.debug("Lat min=" + latBounds.getFirst() + " max=" + latBounds.getSecond());
+
+		Pair<BigDecimal, BigDecimal> lonBounds = ((GeoStreetDAO) streetDAO).getLongitudeBoundaries();
+		Log.debug("Lon min=" + lonBounds.getFirst() + " max=" + lonBounds.getSecond());
+		
+		return new Pair<Pair<BigDecimal,BigDecimal>,Pair<BigDecimal,BigDecimal>>(latBounds,lonBounds);
+	}
+	
+	/**
+	 * Compute the tile map for the specified tile ids
+	 * @param tileIds
+	 * @return
+	 */
+	public String updateMap(List<Pair<Long, Long>> tileIds) {
 		int added = 0;
 		int updated = 0;
-		List<Pair<Long, Long>> tileIds = TileHelper.getInstance().getBoundariesTileId(latBounds, lonBounds);
 		for (Pair<Long, Long> id : tileIds) {
 			Log.debug("Build tile latId=" + id.getFirst() + " lonId=" + id.getSecond());
 			Tile tile = buildTile(id);
@@ -155,7 +179,6 @@ public class TileService implements TileServiceInterface {
 				updated++;
 			}
 		}
-
 		return added + " tiles added and " + updated + " tiles updated";
 	}
 
