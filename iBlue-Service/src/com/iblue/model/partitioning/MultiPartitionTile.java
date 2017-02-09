@@ -31,35 +31,35 @@ public class MultiPartitionTile implements PartitionTileInterface {
 		BigDecimal mark = minLat.add(ranges.getFirst().get(0).setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN));
 		Range<BigDecimal> temp = Range.lessThan(mark);
 		latRanges.add(temp);
-		Log.debug("Lat range parittion added "+temp.toString());
+		Log.debug("Lat range partition added "+temp.toString());
 		for (int i = 1; i < ranges.getFirst().size() ; i++) {
 			temp = Range.closedOpen(mark,
 					mark.add(ranges.getFirst().get(i).setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN)));
 			latRanges.add(temp);
-			Log.debug("Lat range parittion added "+temp.toString());
+			Log.debug("Lat range partition added "+temp.toString());
 			mark = mark.add(ranges.getFirst().get(i).setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN));
 		}
 
 		temp = Range.atLeast(mark);
 		latRanges.add(temp);
-		Log.debug("Lat range parittion added "+temp.toString());
+		Log.debug("Lat range partition added "+temp.toString());
 
 		// Generate latitude ranges
 		mark = minLon.add(ranges.getSecond().get(0).setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN));
 		temp = Range.lessThan(mark);
-		Log.debug("Lon range parittion added "+temp.toString());
+		Log.debug("Lon range partition added "+temp.toString());
 		lonRanges.add(temp);
 		for (int i = 1; i < ranges.getSecond().size(); i++) {
 			temp = Range.closedOpen(mark,
 					mark.add(ranges.getSecond().get(i).setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN)));
 			lonRanges.add(temp);
-			Log.debug("Lon range parittion added "+temp.toString());
+			Log.debug("Lon range partition added "+temp.toString());
 			mark = mark.add(ranges.getSecond().get(i).setScale(LAT_LON_SCALE, BigDecimal.ROUND_HALF_DOWN));
 		}
 
 		temp = Range.atLeast(mark);
 		lonRanges.add(temp);
-		Log.debug("Lon range parittion added "+temp.toString());
+		Log.debug("Lon range partition added "+temp.toString());
 
 	}
 

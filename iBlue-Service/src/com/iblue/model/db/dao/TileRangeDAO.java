@@ -23,7 +23,7 @@ public class TileRangeDAO extends MasterDAO {
 	
 	public List<TileRange> getTileRanges() {
 		openTx();
-		Query<TileRange> query = session.createQuery("from TileRange where id = 1", TileRange.class);
+		Query<TileRange> query = session.createQuery("from TileRange", TileRange.class);
 		List<TileRange> ranges = query.getResultList();
 		closeTx();
 		return ranges;

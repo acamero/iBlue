@@ -113,7 +113,7 @@ public class MultiPartitionTileFactory implements PartitionFactoryInterface {
 				Log.debug("Lat range added: "+ranges.get(i).getLatitudeRange());
 			}
 		}
-		
+		Log.debug("Decoded from DB: lat-ranges="+latRanges.size()+"\tlon-ranges="+lonRanges.size());
 		return new Pair<List<BigDecimal>, List<BigDecimal>>(latRanges, lonRanges);
 	}
 

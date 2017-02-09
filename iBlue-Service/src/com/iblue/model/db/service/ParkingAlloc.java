@@ -12,6 +12,7 @@ import com.iblue.model.StreetAvailabilityInterface;
 import com.iblue.model.db.Spot;
 import com.iblue.model.db.StreetAvailability;
 import com.iblue.model.db.dao.SpotDAO;
+import com.iblue.utils.Log;
 
 public class ParkingAlloc implements ParkingAllocInterface {
 
@@ -57,7 +58,7 @@ public class ParkingAlloc implements ParkingAllocInterface {
 		}
 		closeTx();
 		if (res != null && res.length >= 2) {
-			System.out.println("Street id=" + res[0].toString() + " distance=" + res[1].toString());
+			Log.debug("Street id=" + res[0].toString() + " distance=" + res[1].toString());
 			BigInteger id = (BigInteger)res[0];
 			return id.longValue();
 		}
