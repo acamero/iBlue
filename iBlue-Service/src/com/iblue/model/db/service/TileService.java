@@ -35,6 +35,7 @@ public class TileService implements TileServiceInterface {
 	private StreetDAOInterface streetDAO;
 	private TileDAO tileDAO;
 	private TileCacheInterface tileCache = loadTileCache();
+	private static final BigDecimal DELTA = new BigDecimal(1.0d);
 
 	public TileService() {
 		streetDAO = new GeoStreetDAO();
@@ -223,6 +224,47 @@ public class TileService implements TileServiceInterface {
 	public Tile getTile(BigDecimal latFrom, BigDecimal lonFrom, BigDecimal latTo, BigDecimal lonTo) {
 
 		List<Pair<Long, Long>> tileIds = TileHelper.getInstance().getListTileId(latFrom, lonFrom, latTo, lonTo);
+		@SuppressWarnings("unchecked")
+		List<TileContainerInterface> tileConts = (List<TileContainerInterface>) tileCache.getTiles(tileIds);
+
+		// System.out.println("Tiles number " + tileConts.size());
+		Tile tile = new Tile();
+		tile.setAdjacencyMatrix(HashBasedTable.create());
+		tile.setIntersections(new HashMap<Long, IntersectionInterface>());
+		tile.setWeightsMatrix(HashBasedTable.create());
+
+		for (TileContainerInterface tc : tileConts) {
+			Log.debug("Tile id: " + tc.getTileId().getFirst() + " " + tc.getTileId().getSecond());
+			Log.debug("Intersections: " + tc.getTile().getIntersections().size());
+			Log.debug("Weights: " + tc.getTile().getWeightsMatrix().size());
+			Log.debug("Edges: " + tc.getTile().getAdjacencyMatrix().size());
+			tile.appendAdjacencyMatrix(tc.getTile().getAdjacencyMatrix());
+			tile.appendIntersections(tc.getTile().getIntersections());
+			tile.appendWeights(tc.getTile().getWeightsMatrix());
+		}
+
+		return tile;
+	}
+	
+	public Tile getEnlargedTile(BigDecimal latFrom, BigDecimal lonFrom, BigDecimal latTo, BigDecimal lonTo) {
+		BigDecimal _latFrom, _latTo, _lonFrom, _lonTo;
+		if(latFrom.compareTo(latTo)<0) {
+			_latFrom = latFrom.subtract(DELTA);
+			_latTo = latTo.add(DELTA);
+		} else {
+			_latFrom = latTo.subtract(DELTA);
+			_latTo = latFrom.add(DELTA);
+		}
+		
+		if(lonFrom.compareTo(lonTo)<0) {
+			_lonFrom = lonFrom.subtract(DELTA);
+			_lonTo = lonTo.add(DELTA);
+		} else {
+			_lonFrom = lonTo.subtract(DELTA);
+			_lonTo = lonFrom.add(DELTA);
+		}
+		
+		List<Pair<Long, Long>> tileIds = TileHelper.getInstance().getListTileId(_latFrom, _lonFrom, _latTo, _lonTo);
 		@SuppressWarnings("unchecked")
 		List<TileContainerInterface> tileConts = (List<TileContainerInterface>) tileCache.getTiles(tileIds);
 
