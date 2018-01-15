@@ -221,7 +221,7 @@ public class Main {
 		List<Pair<GeoStreetInterface, GeoStreetInterface>> od = rg.getRoutes("spots-malaga.txt");
 		// instantiate the optimizer
 		int seed = getSeed(seedPosition);
-		seed = 123456789;
+		//seed = 123456789;
 		TileOptimizerInterface optimizer = new CMAESTileOptimization(seed, maxPartitions, mapScale, od, cache);
 		// do the optimization
 		PointValuePair solution = optimizer.optimize(maxEvals);
