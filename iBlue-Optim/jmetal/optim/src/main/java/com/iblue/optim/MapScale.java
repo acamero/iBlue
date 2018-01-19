@@ -1,4 +1,4 @@
-package com.iblue.optimization;
+package com.iblue.optim;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,7 +10,6 @@ import java.util.stream.DoubleStream;
 import com.iblue.utils.Log;
 
 public class MapScale {
-
 	public class MapPartition {
 		public List<BigDecimal> latPartitions;
 		public List<BigDecimal> lonPartitions;
@@ -22,7 +21,7 @@ public class MapScale {
 
 		public String key() {
 			String key = latPartitions.stream().map(Object::toString).collect(Collectors.joining(", "));
-			key = key + " $ " + lonPartitions.stream().map(Object::toString).collect(Collectors.joining(", "));
+			key = key + ", " + lonPartitions.stream().map(Object::toString).collect(Collectors.joining(", "));
 			return key;
 		}
 	}
@@ -40,16 +39,16 @@ public class MapScale {
 		List<BigDecimal> latPartitions = new ArrayList<BigDecimal>();
 		List<BigDecimal> lonPartitions = new ArrayList<BigDecimal>();
 
-		BigDecimal latSum = new BigDecimal(DoubleStream.of(latDivision).sum(), CMAESTileOptimization.MATH_CONTEXT);
-		BigDecimal lonSum = new BigDecimal(DoubleStream.of(lonDivision).sum(), CMAESTileOptimization.MATH_CONTEXT);
+		BigDecimal latSum = new BigDecimal(DoubleStream.of(latDivision).sum(), MultiTileProblem.MATH_CONTEXT);
+		BigDecimal lonSum = new BigDecimal(DoubleStream.of(lonDivision).sum(), MultiTileProblem.MATH_CONTEXT);
 
 		if (latSum.compareTo(BigDecimal.ZERO) == 0) {
-			latPartitions.add(new BigDecimal(0, CMAESTileOptimization.MATH_CONTEXT));
+			latPartitions.add(new BigDecimal(0, MultiTileProblem.MATH_CONTEXT));
 		} else {
 			// latitude scaling
 			for (int i = 0; i < latDivision.length; i++) {
-				BigDecimal temp = latRange.multiply(new BigDecimal(latDivision[i], CMAESTileOptimization.MATH_CONTEXT))
-						.divide(latSum, CMAESTileOptimization.MATH_CONTEXT);				
+				BigDecimal temp = latRange.multiply(new BigDecimal(latDivision[i], MultiTileProblem.MATH_CONTEXT))
+						.divide(latSum, MultiTileProblem.MATH_CONTEXT);				
 				if (temp.compareTo(BigDecimal.ZERO) != 0) {
 					latPartitions.add(temp);
 				}
@@ -58,11 +57,11 @@ public class MapScale {
 
 		// longitude scaling
 		if (lonSum.compareTo(BigDecimal.ZERO) == 0) {
-			lonPartitions.add(new BigDecimal(0, CMAESTileOptimization.MATH_CONTEXT));
+			lonPartitions.add(new BigDecimal(0, MultiTileProblem.MATH_CONTEXT));
 		} else {
 			for (int i = 0; i < lonDivision.length; i++) {
-				BigDecimal temp = lonRange.multiply(new BigDecimal(lonDivision[i], CMAESTileOptimization.MATH_CONTEXT))
-						.divide(lonSum, CMAESTileOptimization.MATH_CONTEXT);
+				BigDecimal temp = lonRange.multiply(new BigDecimal(lonDivision[i], MultiTileProblem.MATH_CONTEXT))
+						.divide(lonSum, MultiTileProblem.MATH_CONTEXT);
 				if (temp.compareTo(BigDecimal.ZERO) != 0) {
 					lonPartitions.add(temp);
 				}

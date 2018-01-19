@@ -1,4 +1,4 @@
-package com.iblue.optimization;
+package com.iblue.optim;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,16 +20,29 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.math3.optim.PointValuePair;
+import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.algorithm.singleobjective.evolutionstrategy.EvolutionStrategyBuilder;
+import org.uma.jmetal.algorithm.singleobjective.evolutionstrategy.EvolutionStrategyBuilder.EvolutionStrategyVariant;
+import org.uma.jmetal.operator.MutationOperator;
+import org.uma.jmetal.operator.impl.mutation.SimpleRandomMutation;
+import org.uma.jmetal.solution.DoubleSolution;
+import org.uma.jmetal.util.AlgorithmRunner;
+import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 import com.iblue.model.GeoStreetInterface;
 import com.iblue.model.db.service.TileService;
-import com.iblue.optimization.MapScale.MapPartition;
+import com.iblue.optim.pso.StandardPSO2011;
 import com.iblue.utils.Log;
 import com.iblue.utils.Pair;
 import com.iblue.utils.Log.LogLevel;
 
 public class Main {
+
+	private static enum Algorithms {
+		MuLambdaES, PSO
+	};
 
 	private static final int seeds[] = { 2902, 5235, 357, 6058, 4846, 8280, 1295, 181, 3264, 7285, 8806, 2344, 9203,
 			6806, 1511, 2172, 843, 4697, 3348, 1866, 5800, 4094, 2751, 64, 7181, 9167, 5579, 9461, 3393, 4602, 1796,
@@ -63,6 +76,9 @@ public class Main {
 		// maximum number of evaluations
 		options.addOption(
 				Option.builder().longOpt("max-evals").hasArg().desc("set the maximum number of evaluations").build());
+
+		options.addOption(Option.builder().longOpt("algorithm").hasArg()
+				.desc("set the optimization algorithm (" + Arrays.toString(Algorithms.values()) + ")").build());
 
 		return options;
 	}
@@ -156,6 +172,39 @@ public class Main {
 		}
 	}
 
+	private static Algorithm<DoubleSolution> getAlgorithm(String algorithmStr, MultiTileProblem problem) {
+		Algorithm<DoubleSolution> algorithm = null;
+		if (algorithmStr.equals(Algorithms.MuLambdaES.toString())) {
+			double mutationProb = 1.0d / (2.0d * (double) problem.getMaxPartitions());
+			int mu = 1;
+			int lambda = 1;
+			Log.info("Mu=" + mu + " Lambda=" + lambda + " Mutation Prob=" + mutationProb);
+			MutationOperator<DoubleSolution> mutation = new SimpleRandomMutation(mutationProb);
+			algorithm = new EvolutionStrategyBuilder<DoubleSolution>(problem, mutation,
+					EvolutionStrategyVariant.ELITIST).setLambda(lambda).setMu(mu)
+							.setMaxEvaluations(problem.getMaxEvals()).build();
+		} else if (algorithmStr.equals(Algorithms.PSO.toString())) {
+			int maxIterations = 2;
+			int swarmSize = 3;
+			int numberOfParticlesToInform = (int) ((double) swarmSize
+					* (1.0d - Math.pow(1.0d - 1.0d / (double) swarmSize, 3.0d)));
+			if (problem.getMaxEvals() > swarmSize) {
+				maxIterations = problem.getMaxEvals() / swarmSize + 1;
+			}
+			if(numberOfParticlesToInform<1) {
+				numberOfParticlesToInform=1;
+			}
+			Log.info("Swarm size=" + swarmSize + " Particles to inform=" + numberOfParticlesToInform + " Iterations="
+					+ maxIterations);
+			SolutionListEvaluator<DoubleSolution> evaluator = new SequentialSolutionListEvaluator<DoubleSolution>();
+			algorithm = new StandardPSO2011(problem, 0, swarmSize, maxIterations, numberOfParticlesToInform, evaluator);
+		} else {
+			Log.error("Algorithm '" + algorithmStr + "' not found");
+		}
+
+		return algorithm;
+	}
+
 	public static void main(String[] args) throws IOException {
 		Log.setLogLevel(LogLevel.INFO);
 		String cacheFileName = "cache.txt";
@@ -165,7 +214,9 @@ public class Main {
 		// parameters
 		int seedPosition = 0;
 		int maxPartitions = 10;
-		int maxEvals = 1;
+		int maxEvals = 4;
+		String algorithmStr = Algorithms.PSO.toString();
+		//String algorithmStr = Algorithms.MuLambdaES.toString();
 
 		CommandLineParser parser = new DefaultParser();
 		Options options = setOptions();
@@ -197,11 +248,16 @@ public class Main {
 				Log.info("Maximum number of evaluations set to " + maxEvals);
 			}
 
+			if (line.hasOption("algorithm")) {
+				algorithmStr = line.getOptionValue("algorithm");
+				Log.info("Algorithm set to " + algorithmStr);
+			}
+
 		} catch (ParseException e) {
 			Log.error("Unexpected exception:" + e.getMessage());
 			return;
 		}
-
+		
 		Map<String, Double> cache = loadCache(cacheFileName);
 		// update output file names using the position of the seed selected
 		solutionFileName = seedPosition + "-" + solutionFileName;
@@ -219,23 +275,21 @@ public class Main {
 		RoutesGenerator rg = new RoutesGenerator();
 
 		List<Pair<GeoStreetInterface, GeoStreetInterface>> od = rg.getRoutes("spots-malaga.txt");
-		// instantiate the optimizer
-		int seed = getSeed(seedPosition);
-		//seed = 123456789;
-		TileOptimization optimizer = new CMAESTileOptimization(seed, maxPartitions, mapScale, od, cache);
-		// do the optimization
-		PointValuePair solution = optimizer.optimize(maxEvals);
-		List<String> history = optimizer.getHistory();
+		// reproducibility
+		JMetalRandom.getInstance().setSeed(getSeed(seedPosition));
 
-		storeCache(cacheFileName, cache);
+		MultiTileProblem problem = new MultiTileProblem(maxPartitions, cache, od, mapScale, maxEvals);
 
-		// decode the solution
-		MapPartition partitions = mapScale.scale(Arrays.copyOfRange(solution.getPoint(), 0, maxPartitions),
-				Arrays.copyOfRange(solution.getPoint(), maxPartitions, maxPartitions * 2));
-		String solutionStr = partitions.key();
-		storeSolution(solutionFileName, solutionStr, cache.get(solutionStr));
+		Algorithm<DoubleSolution> algorithm = getAlgorithm(algorithmStr, problem);
+		AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
+
+		DoubleSolution solution = algorithm.getResult();
+		Log.info("Solution fitness" + solution.getObjective(0));
+		storeSolution(solutionFileName, solution.toString(), solution.getObjective(0));
+
 		// store all history
-		storeHistory(fitnessHistoryFileName, history);
-		Log.info("Run ended");
+		storeHistory(fitnessHistoryFileName, problem.getHistory());
+		storeCache(cacheFileName, cache);
+		Log.info("Run ended [time " + algorithmRunner.getComputingTime() + "]");
 	}
 }

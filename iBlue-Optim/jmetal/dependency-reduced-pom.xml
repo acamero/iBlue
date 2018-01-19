@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.iblue.optim</groupId>
-  <artifactId>cmaes</artifactId>
-  <name>cmaes</name>
+  <artifactId>jmetal</artifactId>
+  <name>pso</name>
   <version>0.0.1-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
   <build>
@@ -30,7 +30,7 @@
         <configuration>
           <transformers>
             <transformer>
-              <mainClass>com.iblue.optimization.Main</mainClass>
+              <mainClass>com.iblue.optim.Main</mainClass>
             </transformer>
           </transformers>
           <finalName>${project.artifactId}-${project.version}</finalName>
@@ -49,6 +49,7 @@
   <properties>
     <iblue.service.version>1.0.2-RELEASE</iblue.service.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jmetal.version>5.0</jmetal.version>
     <apache.commons>1.3</apache.commons>
   </properties>
 </project>
