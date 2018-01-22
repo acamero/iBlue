@@ -20,6 +20,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.math3.optim.InitialGuess;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.singleobjective.evolutionstrategy.EvolutionStrategyBuilder;
 import org.uma.jmetal.algorithm.singleobjective.evolutionstrategy.EvolutionStrategyBuilder.EvolutionStrategyVariant;
@@ -79,6 +80,8 @@ public class Main {
 
 		options.addOption(Option.builder().longOpt("algorithm").hasArg()
 				.desc("set the optimization algorithm (" + Arrays.toString(Algorithms.values()) + ")").build());
+		
+		options.addOption("i", "initial", false, "fixed initial solution (10x10 regular partition)");
 
 		return options;
 	}
@@ -217,6 +220,7 @@ public class Main {
 		int maxEvals = 4;
 		String algorithmStr = Algorithms.PSO.toString();
 		//String algorithmStr = Algorithms.MuLambdaES.toString();
+		double[] guessDbl = null;
 
 		CommandLineParser parser = new DefaultParser();
 		Options options = setOptions();
@@ -230,6 +234,14 @@ public class Main {
 				formatter.printHelp("mssga", options, true);
 				// stop processing and print help
 				return;
+			}
+			
+			if (line.hasOption("initial")) {
+				guessDbl = new double[maxPartitions * 2];
+				for (int i = 0; i < guessDbl.length; i++) {
+					guessDbl[i] = 0.5d;
+				}
+				Log.info("Fixed initial guess " + Arrays.toString(guessDbl));
 			}
 
 			if (line.hasOption("log-level")) {
@@ -279,6 +291,9 @@ public class Main {
 		JMetalRandom.getInstance().setSeed(getSeed(seedPosition));
 
 		MultiTileProblem problem = new MultiTileProblem(maxPartitions, cache, od, mapScale, maxEvals);
+		if(guessDbl!=null) {
+			problem.setInitialSolution(guessDbl);
+		}
 
 		Algorithm<DoubleSolution> algorithm = getAlgorithm(algorithmStr, problem);
 		AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();

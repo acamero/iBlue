@@ -20,6 +20,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.PointValuePair;
 
 import com.iblue.model.GeoStreetInterface;
@@ -63,6 +64,8 @@ public class Main {
 		// maximum number of evaluations
 		options.addOption(
 				Option.builder().longOpt("max-evals").hasArg().desc("set the maximum number of evaluations").build());
+
+		options.addOption("i", "initial", false, "fixed initial solution (10x10 regular partition)");
 
 		return options;
 	}
@@ -166,6 +169,7 @@ public class Main {
 		int seedPosition = 0;
 		int maxPartitions = 10;
 		int maxEvals = 1;
+		InitialGuess initialGuess = null;
 
 		CommandLineParser parser = new DefaultParser();
 		Options options = setOptions();
@@ -179,6 +183,15 @@ public class Main {
 				formatter.printHelp("mssga", options, true);
 				// stop processing and print help
 				return;
+			}
+
+			if (line.hasOption("initial")) {
+				double[] guessDbl = new double[maxPartitions * 2];
+				for (int i = 0; i < guessDbl.length; i++) {
+					guessDbl[i] = 0.5d;
+				}
+				initialGuess = new InitialGuess(guessDbl);
+				Log.info("Fixed initial guess " + Arrays.toString(guessDbl));
 			}
 
 			if (line.hasOption("log-level")) {
@@ -221,10 +234,15 @@ public class Main {
 		List<Pair<GeoStreetInterface, GeoStreetInterface>> od = rg.getRoutes("spots-malaga.txt");
 		// instantiate the optimizer
 		int seed = getSeed(seedPosition);
-		//seed = 123456789;
+		// seed = 123456789;
 		TileOptimization optimizer = new CMAESTileOptimization(seed, maxPartitions, mapScale, od, cache);
 		// do the optimization
-		PointValuePair solution = optimizer.optimize(maxEvals);
+		PointValuePair solution = null;
+		if (initialGuess == null) {
+			solution = optimizer.optimize(maxEvals);
+		} else {
+			solution = optimizer.optimize(maxEvals, initialGuess);
+		}
 		List<String> history = optimizer.getHistory();
 
 		storeCache(cacheFileName, cache);

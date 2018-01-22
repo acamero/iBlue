@@ -1,7 +1,4 @@
-/bin/
 /target/
-/fitness-results.csv
-/routing-results.csv
-/tile-comp-results.csv
-/cache.txt
-/population-stats.csv
+*history.txt
+*solution.txt
+*cache.txt

@@ -36,6 +36,7 @@ public class MultiTileProblem extends AbstractDoubleProblem {
 	private double upper = 1.0d;
 	private double lower = 0.0d;
 	private int maxEvals;
+	private double[] initialSolution = null;
 
 	public MultiTileProblem(int maxPartitions, Map<String, Double> cache,
 			List<Pair<GeoStreetInterface, GeoStreetInterface>> od, MapScale mapScale, int maxEvals) {
@@ -137,23 +138,30 @@ public class MultiTileProblem extends AbstractDoubleProblem {
 	public Double getUpperBound(int index) {
 		return upper;
 	}
-	
+
 	public List<String> getHistory() {
 		return history;
 	}
-	
+
 	public DoubleSolution createSolution() {
 		Log.debug("Default solution called");
-		//return new DefaultDoubleSolution(this);
-		return new DefaultSolution(this);
+		// return new DefaultDoubleSolution(this);
+		if (this.initialSolution == null) {
+			return new DefaultSolution(this);
+		} else {
+			return new DefaultSolution(this, this.initialSolution);
+		}
 	}
-	
+
 	public int getMaxPartitions() {
 		return this.maxPartitions;
 	}
-	
+
 	public int getMaxEvals() {
 		return this.maxEvals;
 	}
-	
+
+	public void setInitialSolution(double[] initialSolution) {
+		this.initialSolution = initialSolution;
+	}
 }

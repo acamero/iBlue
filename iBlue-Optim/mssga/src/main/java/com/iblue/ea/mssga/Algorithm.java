@@ -2,6 +2,7 @@ package com.iblue.ea.mssga;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class Algorithm {
 	private BufferedWriter statsBw;
 
 	public Algorithm(Problem problem, int popSize, CrossoverInterface crossover, MutationInterface mutation,
-			ScaleInterface scale, SelectionInterface selection, int maxInitialPartitions, BufferedWriter statsBw)
-			throws PopulationException, ChromosomeException, IndividualInitInterfaceException {
+			ScaleInterface scale, SelectionInterface selection, int maxInitialPartitions, double[] initialSolution,
+			BufferedWriter statsBw) throws PopulationException, ChromosomeException, IndividualInitInterfaceException {
 
 		this.problem = problem;
 		this.crossover = crossover;
@@ -38,14 +39,33 @@ public class Algorithm {
 		this.maxInitialPartitions = maxInitialPartitions;
 		this.statsBw = statsBw;
 		List<Individual> individuals = new ArrayList<Individual>();
-		RandomIndividualInit init = new RandomIndividualInit();
-		for (int i = 0; i < popSize; i++) {
-			Individual ind = init.nextIndividual(maxInitialPartitions);
-			scale.scale(ind);
-			individuals.add(ind);
+		if (initialSolution == null) {
+			RandomIndividualInit init = new RandomIndividualInit();
+			for (int i = 0; i < popSize; i++) {
+				Individual ind = init.nextIndividual(maxInitialPartitions);
+				scale.scale(ind);
+				individuals.add(ind);
+			}
+		} else {
+			for (int i = 0; i < popSize; i++) {
+				Individual ind = initialIndividual(initialSolution);
+				scale.scale(ind);
+				individuals.add(ind);
+			}
 		}
 		Log.debug(individuals.size() + " individuals added to the initial population");
 		population = new Population(individuals);
+	}
+
+	private Individual initialIndividual(double[] initialSolution) throws ChromosomeException {
+		Individual individual = new Individual(this.maxInitialPartitions, this.maxInitialPartitions);
+		for (int i = 0; i < this.maxInitialPartitions; i++) {
+			individual.getChromosome().getLatGenes().set(i, new BigDecimal(0.5d, Problem.MATH_CONTEXT));
+		}
+		for (int i = 0; i < this.maxInitialPartitions; i++) {
+			individual.getChromosome().getLonGenes().set(i, new BigDecimal(0.5d, Problem.MATH_CONTEXT));
+		}
+		return individual;
 	}
 
 	/**
@@ -105,7 +125,8 @@ public class Algorithm {
 			// populations statistics are computed automatically
 			try {
 				statsBw.write(population.getBestFitness() + ";" + population.getBestFitnessEver() + ";"
-						+ population.getMedianFitness() + ";" + population.getMeanFitness() + ";"+ population.getStDev() + "\n");
+						+ population.getMedianFitness() + ";" + population.getMeanFitness() + ";"
+						+ population.getStDev() + "\n");
 				statsBw.flush();
 			} catch (IOException e) {
 				e.printStackTrace();

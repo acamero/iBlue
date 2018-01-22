@@ -10,6 +10,13 @@ public class DefaultSolution extends DefaultDoubleSolution {
 		super(problem);
 		initializeVars();
 	}
+	
+	public DefaultSolution(DoubleProblem problem, double[] initialSolution) {
+		super(problem);
+		for(int i=0;i<problem.getNumberOfVariables();i++) {
+			setVariableValue(i,initialSolution[i]);
+		}
+	}
 
 	public DefaultSolution(DefaultDoubleSolution solution) {
 		super(solution);

@@ -86,6 +86,8 @@ public class MultiTileMapMain {
 		options.addOption(Option.builder().longOpt("partitions").hasArg()
 				.desc("set the max initial number of partitions").build());
 
+		options.addOption("i", "initial", false, "fixed initial solution (10x10 regular partition)");
+
 		return options;
 	}
 
@@ -197,12 +199,13 @@ public class MultiTileMapMain {
 		int microEvals = 20;
 		int times = 30;
 		int seed = 1;
+		double[] guessDbl = null;
 
 		Log.setLogLevel(LogLevel.INFO);
-		
+
 		CommandLineParser parser = new DefaultParser();
 		Options options = setOptions();
-		
+
 		try {
 			// parse the command line arguments
 			CommandLine line = parser.parse(options, args);
@@ -214,39 +217,47 @@ public class MultiTileMapMain {
 				return;
 			}
 
+			if (line.hasOption("initial")) {
+				guessDbl = new double[maxInitialPartitions * 2];
+				for (int i = 0; i < guessDbl.length; i++) {
+					guessDbl[i] = 0.5d;
+				}
+				Log.info("Fixed initial guess " + Arrays.toString(guessDbl));
+			}
+
 			if (line.hasOption("log-level")) {
 				Log.setLogLevel(LogLevel.getLogLevel(line.getOptionValue("log-level")));
 				Log.info("Set log level to " + line.getOptionValue("log-level"));
 			}
-			
+
 			if (line.hasOption("seed")) {
 				String seedLine = line.getOptionValue("seed");
 				Log.info("Seed number argument parsed (seed '" + seedLine + "' selected)");
-				seed = Integer.valueOf(seedLine);				
+				seed = Integer.valueOf(seedLine);
 			}
-			
+
 			if (line.hasOption("pop-size")) {
 				popSize = Integer.valueOf(line.getOptionValue("pop-size"));
 				Log.info("Population size set to " + popSize);
 			}
-			
+
 			if (line.hasOption("max-evals")) {
 				microEvals = Integer.valueOf(line.getOptionValue("max-evals"));
 				Log.info("Maximum number of evaluations set to " + microEvals);
 			}
-			
+
 			if (line.hasOption("partitions")) {
 				maxInitialPartitions = Integer.valueOf(line.getOptionValue("partitions"));
 				Log.info("Maximum number of partitions set to " + maxInitialPartitions);
 			}
-			
+
 			if (line.hasOption("times")) {
 				times = Integer.valueOf(line.getOptionValue("times"));
 				Log.info("Number of times " + times);
 			}
-			
+
 		} catch (ParseException e) {
-			Log.error("Unexpected exception:" + e.getMessage());			
+			Log.error("Unexpected exception:" + e.getMessage());
 			return;
 		}
 
@@ -272,7 +283,7 @@ public class MultiTileMapMain {
 		ScaleInterface mapScale = new MapScale(latR, lonR);
 
 		Algorithm alg = new Algorithm(problem, popSize, crossover, mutation, mapScale, selection, maxInitialPartitions,
-				statsBw);
+				guessDbl, statsBw);
 
 		alg.evaluate(microEvals, times);
 		cache = problem.getFitnessCache();
